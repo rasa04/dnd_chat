@@ -18,6 +18,7 @@
 <script>
 import ChatComponent from "@/components/ChatComponent.vue";
 import axios from 'axios'
+import {useUserStore} from "@/stores/user";
 export default {
 
   components: {
@@ -25,13 +26,16 @@ export default {
   },
 
   created() {
-    axios.get('http://127.0.0.1:8000/api/user', {
-      headers: {
-        'Authorization': 'Bearer 2|v2Fdwc8q0mnISnTU7hklxYvyCGwOvYnWxhyJmb8y'
-      }
-    }).then((r) => {
-      console.log(r.data);
+    let endpoint = import.meta.env.VITE_API_URL
+    let token = localStorage.getItem('TOKEN')
+    let user = useUserStore()
+
+    axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
+    .then((r) => {
+      user.data = r.data
+      console.log(user.data)
     })
+
   }
 }
 </script>

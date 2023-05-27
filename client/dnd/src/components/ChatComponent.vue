@@ -25,7 +25,3 @@ export default{
     components: { MessageComponent }
 }
 </script>
-
-<script scope>
-
-</script>
