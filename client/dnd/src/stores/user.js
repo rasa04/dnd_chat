@@ -10,8 +10,8 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    increment() {
-      this.count++
+    get() {
+      return this.data
     }
   },
 })

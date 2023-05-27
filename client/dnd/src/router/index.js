@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from "@/views/RegisterView.vue";
 import LoginView from "@/views/LoginView.vue";
 import axios from "axios";
+import {useUserStore} from "@/stores/user";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,12 +17,12 @@ const router = createRouter({
       }
     },
     {
-      path: '/about',
-      name: 'about',
+      path: '/profile',
+      name: 'profile',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('../views/ProfileView.vue'),
       meta: {
         auth: true
       }
@@ -40,12 +41,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  let endpoint = import.meta.env.VITE_API_URL
+  let user = useUserStore()
   let token = localStorage.getItem('TOKEN')
+
   if (to.matched.some(record => record.meta.auth)) { // is route protected
     if(token) { // is token exist
-      axios.get(`${import.meta.env.VITE_API_URL}/api/user`, {headers: {'Authorization': token}})
+      axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
       .then((res) => {
         next()
+        user.data = res.data
+        console.log(user.data)
         console.log('authorized')
       })
       .catch(() => {
@@ -58,7 +64,7 @@ router.beforeEach((to, from, next) => {
   else {
     if(token) { // is token exist
       axios.get(`${import.meta.env.VITE_API_URL}/api/user`, {headers: {'Authorization': token}})
-          .then(() => next({name: 'home'}))
+          .then(() => next({name: 'profile'}))
           .catch(() => next())
     }
     else next(); // Very important to call next() in this case!

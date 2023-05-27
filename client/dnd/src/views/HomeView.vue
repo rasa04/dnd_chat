@@ -26,15 +26,6 @@ export default {
   },
 
   created() {
-    let endpoint = import.meta.env.VITE_API_URL
-    let token = localStorage.getItem('TOKEN')
-    let user = useUserStore()
-
-    axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
-    .then((r) => {
-      user.data = r.data
-      console.log(user.data)
-    })
 
   }
 }
