@@ -90,9 +90,9 @@ export default {
 
       axios.post(`${import.meta.env.VITE_API_URL}/api/login`, data)
           .then(res => {
-            localStorage.setItem('TOKEN', res.data.data.token)
+            localStorage.setItem('TOKEN', 'Bearer ' + res.data.token)
             router.push({
-              name: 'home'
+              name: 'profile'
             })
           })
           .catch(error => {

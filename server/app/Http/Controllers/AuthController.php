@@ -28,7 +28,7 @@ class AuthController extends Controller
         return new AuthResource($user);
     }
 
-    public function login(LoginRequest $request): JsonResource
+    public function login(LoginRequest $request): array
     {
         $credentials = $request->validated();
 
@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) throw ValidationException::withMessages([]);
 
-        return new AuthResource($user);
+        return AuthResource::make($user)->resolve();
     }
 
     public function logout(): array

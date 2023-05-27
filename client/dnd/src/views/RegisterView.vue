@@ -8,14 +8,17 @@
       <img class="h-full rounded-3xl mt-12" src="@/components/icons/dnd_icon.jpg" width="100" height="100">
     </div>
     <div id="form" class="row-span-5 z-30 bg-second-color p-8 rounded-3xl">
-      <AuthInputData @update-value="res => this.credentials.username = res" :icon="['fa', 'user']" :hidden="this.hideEmail"
-                     @hide-another="hideUsernameInput" @change-status="(status) => this.inputStatus = status" name="username"
+      <AuthInputData @update-value="res => this.credentials.username = res" :icon="['fa', 'user']"
+                     @hide-another="" @change-status="(status) => this.inputStatus = status" name="username"
       />
-      <AuthInputData @update-value="res => this.credentials.email = res" :icon="['fas', 'envelope']" :hidden="this.hideUsername"
-                     @hide-another="hideEmailInput" @change-status="(status) => this.inputStatus = status" name="email"
+      <AuthInputData @update-value="res => this.credentials.email = res" :icon="['fas', 'envelope']"
+                     @hide-another="" @change-status="(status) => this.inputStatus = status" name="email"
       />
-      <AuthInputData @update-value="res => this.credentials.password = res" :icon="['fa', 'key']" :hidden="false"
-                     @hide-another="" @change-status="(status) => this.passwordStatus = status" name="password"
+      <AuthInputData @update-value="res => this.credentials.password = res" :icon="['fa', 'key']" :hidden="this.hidePasswordConfirmation"
+                     @hide-another="hidePasswordInput" @change-status="(status) => this.passwordStatus = status" name="password"
+      />
+      <AuthInputData @update-value="res => this.credentials.password_confirmation = res" :icon="['fa', 'key']" :hidden="this.hidePassword"
+                     @hide-another="hidePasswordConfirmationInput" @change-status="(status) => this.passwordStatus = status" name="password confirmation"
       />
       <div class="mt-5">
         <button type="button"
@@ -58,27 +61,28 @@ export default {
   data() {
     return {
       ableToContinue: false,
-      hideEmail: false,
-      hideUsername: false,
+      hidePassword: false,
+      hidePasswordConfirmation: false,
       hideOthers: false,
       inputStatus: false,
       passwordStatus: false,
       credentials: {
         username: null,
         email: null,
-        password: null
+        password: null,
+        password_confirmation: null,
       },
       background_video: Math.floor(Math.random() * 2)+1
     }
   },
 
   methods: {
-    hideUsernameInput() {
+    hidePasswordInput() {
       this.hideUsername = !this.hideUsername
       this.hideOtherAuthWays()
     },
-    hideEmailInput() {
-      this.hideEmail = !this.hideEmail
+    hidePasswordConfirmationInput() {
+      this.hideUsername = !this.hideUsername
       this.hideOtherAuthWays()
     },
     hideOtherAuthWays() {
@@ -90,9 +94,9 @@ export default {
 
       axios.post(`${import.meta.env.VITE_API_URL}/api/register`, data)
       .then(res => {
-        localStorage.setItem('TOKEN', res.data.data.token)
+        localStorage.setItem('TOKEN', 'Bearer ' + res.data.data.token)
         router.push({
-          name: 'home'
+          name: 'profile'
         })
       })
       .catch(error => {

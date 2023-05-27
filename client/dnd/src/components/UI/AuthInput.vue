@@ -11,7 +11,6 @@
           focus:ring-lime-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5
           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
           dark:focus:border-blue-500" :placeholder="name" v-model="inputValue"
-             @blur="checkForError"
       >
     </div>
     <span class="text-red-500 mb-6" v-if="errorTip">
@@ -41,7 +40,7 @@ export default {
   },
 
   watch: {
-    inputValue(n, o) {
+    inputValue(n) {
       // 1 HIDE OTHER INPUTS
       this.hideAnother = (n !== '')
       // 2 VALIDATE INPUT
@@ -49,17 +48,20 @@ export default {
         this.errorTip = (!/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(this.inputValue) && n !== '')
         this.status = (this.inputValue !== '' && !this.errorTip)
       }else if (this.name === 'username') {
-        this.errorTip = (n.length < 5 && n !== '')
+        this.errorTip = (n.length < 4 && n !== '')
         this.status = (this.inputValue !== '' && !this.errorTip)
       }else if (this.name === 'password') {
-        this.errorTip = (n.length < 6 && n !== '')
+        this.errorTip = (n.length < 8 && n !== '')
+        this.status = (this.inputValue !== '' && !this.errorTip)
+      }else if (this.name === 'password confirmation') {
+        this.errorTip = (n.length < 8 && n !== '')
         this.status = (this.inputValue !== '' && !this.errorTip)
       }
       // CHANGE STATUS
       this.$emit('changeStatus', this.status)
       this.$emit('updateValue', n)
     },
-    hideAnother(n, o) {
+    hideAnother(n) {
       this.$emit('hideAnother', n)
     },
   }
