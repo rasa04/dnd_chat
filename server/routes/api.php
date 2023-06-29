@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
 use Illuminate\Http\Request;
@@ -18,7 +19,6 @@ use App\Http\Controllers\AuthController;
 */
 Route::controller(MainController::class)->group(function () {
     Route::get('/users', 'users');
-    Route::get('/games', 'games');
 });
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -32,6 +32,12 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::controller(AuthController::class)->group(function() {
         Route::get('/user', 'user');
         Route::post('/logout', 'logout');
+    });
+    Route::prefix('/game')->group(function () {
+        Route::get('/', [GameController::class, 'index']);
+        Route::post('/', [GameController::class, 'store']);
+        Route::get('/my', [GameController::class, 'my_games']);
+        Route::post('/join', [GameController::class, 'join']);
     });
 });
 
