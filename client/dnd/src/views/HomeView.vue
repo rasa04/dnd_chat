@@ -17,16 +17,10 @@
 
 <script>
 import ChatComponent from "@/components/ChatComponent.vue";
-import axios from 'axios'
-import {useUserStore} from "@/stores/user";
 export default {
 
   components: {
     ChatComponent
   },
-
-  created() {
-
-  }
 }
 </script>
