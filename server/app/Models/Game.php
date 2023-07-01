@@ -11,6 +11,8 @@ class Game extends Model
 {
     use HasFactory;
 
+    protected $guarded = false;
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'game_user');
