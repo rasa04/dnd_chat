@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
   }
   else {
     if(token) { // is token exist
-      axios.get(`${import.meta.env.VITE_API_URL}/api/user`, {headers: {'Authorization': token}})
+      axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
           .then(() => next({name: 'profile'}))
           .catch(() => next())
     }
