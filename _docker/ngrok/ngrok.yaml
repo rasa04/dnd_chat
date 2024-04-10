@@ -1,0 +1,12 @@
+version: 2
+authtoken: 2QVo6w8IibIYnr7EnPEiTKw9AMs_6EYYkAYPs14b1XNpfep93
+tunnels:
+  client:
+    addr: client:8080
+    proto: http
+  server:
+    addr: nginx:81
+    proto: http
+  ws:
+    addr: ws:8081
+    proto: tcp

@@ -1,46 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Game\JoinRequest;
 use App\Http\Requests\Game\QuitRequest;
 use App\Http\Requests\Game\StoreRequest;
 use App\Http\Resources\GameResource;
-use App\Models\Game;
+use App\Models\User;
 use App\Services\GameService;
-use Illuminate\Http\JsonResponse;
+use Exception;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
     public function index(): array
     {
-        return GameResource::collection(Game::all())->resolve();
+        return GameResource::collection(GameService::get())->resolve();
     }
 
-    public function my_games()
+    public function myGames(): array
     {
+        /** @var User $user */
         $user = Auth::user();
+
         return GameResource::collection($user->games())->resolve();
     }
 
+    /**
+     * @throws Exception
+     */
     public function store(StoreRequest $request): array
     {
-        $data = $request->validated();
-        $game = GameService::create($data);
-        return GameResource::make($game)->resolve();
+        return GameResource::make(GameService::create($request->validated()))->resolve();
     }
 
-    public function join(JoinRequest $request)
+    public function join(JoinRequest $request): Response
     {
-        $data = $request->validated();
-        GameService::join($data);
-        return response('success');
+        return new Response(
+            status: GameService::join($request->validated()) ? 201 : 403
+        );
     }
 
-    public function quit(QuitRequest $request)
+    public function quit(QuitRequest $request): Response
     {
         $data = $request->validated();
+
+        return new Response(status: 201);
     }
 
 }

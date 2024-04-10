@@ -11,16 +11,6 @@ services:
         protocol: tcp
     env_file:
       - .env
-  client:
-    container_name: dnd_client
-    restart: always
-    build:
-      context: .
-      dockerfile: ./_docker/client/Dockerfile
-    ports:
-      - target: 8080
-        published: 8080
-        protocol: tcp
   server:
     container_name: dnd_server
     restart: always
@@ -41,6 +31,18 @@ services:
         protocol: tcp
     depends_on:
       - server
+  client:
+    container_name: dnd_client
+    restart: always
+    build:
+      context: .
+      dockerfile: ./_docker/client/Dockerfile
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+    depends_on:
+      - nginx
   ws:
     container_name: dnd_ws
     restart: always
@@ -53,6 +55,26 @@ services:
         protocol: tcp
     volumes:
       - ./ws:/var/www/ws
+  ngrok:
+    container_name: dnd_ngrok
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - 'start'
+      - '--all'
+      - '--config'
+      - '/etc/ngrok.yml'
+    volumes:
+      - ./_docker/ngrok/ngrok.yaml:/etc/ngrok.yml
+      - ./_docker/ngrok/ngrok.log:/var/log/ngrok.log
+    ports:
+      - target: 4040
+        published: 4040
+        protocol: tcp
+    depends_on:
+      - client
+      - nginx
+      - ws
 
 networks:
   server-tier:

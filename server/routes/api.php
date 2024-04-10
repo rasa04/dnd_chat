@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -36,11 +37,9 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::prefix('/game')->group(function () {
         Route::get('/', [GameController::class, 'index']);
         Route::post('/', [GameController::class, 'store']);
-        Route::post('/my', [GameController::class, 'my_games']);
+        Route::post('/my', [GameController::class, 'myGames']);
         Route::post('/join', [GameController::class, 'join']);
     });
 });
 
-Route::get('/test', function () {
-   return [];
-});
+Route::get('/test', static fn () => ['ack']);
