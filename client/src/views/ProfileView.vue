@@ -2,7 +2,7 @@
   <!-- Games list -->
   <div class="fixed top-0 left-0 w-screen h-screen">
     <video autoplay loop muted class="absolute z-10 min-w-full min-h-screen">
-      <source :src="'./src/assets/img/auth_backgrounds/'+background_video+'.mp4'" type="video/mp4" />
+      <source :src="'./assets/img/auth_backgrounds/'+background_video+'.mp4'" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-screen grid grid-rows-6 justify-items-center items-center bg-second-color">
     <video autoplay loop muted class="absolute z-10 min-w-full min-h-screen">
-      <source :src="'./src/assets/img/auth_backgrounds/'+background_video+'.mp4'" type="video/mp4" />
+      <source :src="'./assets/img/auth_backgrounds/'+background_video+'.mp4'" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
     <div id="banner" class="w-full flex items-center justify-center select-none pointer-events-none z-30">

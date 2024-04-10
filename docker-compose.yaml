@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  dnd_database:
+    container_name: dnd_database
+    image: library/mysql:latest
+    restart: always
+    ports:
+      - target: 3306
+        published: 3307
+        protocol: tcp
+    env_file:
+      - .env
+  client:
+    container_name: dnd_client
+    restart: always
+    build:
+      context: .
+      dockerfile: ./_docker/client/Dockerfile
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+  server:
+    container_name: dnd_server
+    restart: always
+    build:
+      context: .
+      dockerfile: ./_docker/server/Dockerfile
+    depends_on:
+      - dnd_database
+  nginx:
+    container_name: dnd_nginx
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./_docker/server/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - target: 80
+        published: 81
+        protocol: tcp
+    depends_on:
+      - server
+  ws:
+    container_name: dnd_ws
+    restart: always
+    build:
+      context: .
+      dockerfile: ./_docker/ws/Dockerfile
+    ports:
+      - target: 8081
+        published: 8081
+        protocol: tcp
+    volumes:
+      - ./ws:/var/www/ws
+
+networks:
+  server-tier:
+    driver: bridge

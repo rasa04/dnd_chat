@@ -18,7 +18,8 @@ class GameFactory extends Factory
     {
         return [
             'name' => $this->faker->slug,
-            'description' => $this->faker->realText
+            'description' => $this->faker->realText,
+            'password' => '12345678',
         ];
     }
 }
