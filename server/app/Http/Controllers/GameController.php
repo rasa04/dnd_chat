@@ -14,11 +14,16 @@ use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
-class GameController extends Controller
+final class GameController extends Controller
 {
     public function index(): array
     {
-        return GameResource::collection(GameService::get())->resolve();
+        return GameResource::collection(GameService::getGames())->resolve();
+    }
+
+    public function show(int $gameId): array
+    {
+        return GameResource::make(GameService::byId($gameId))->resolve();
     }
 
     public function myGames(): array

@@ -19,6 +19,12 @@ services:
       dockerfile: ./_docker/server/Dockerfile
     depends_on:
       - dnd_database
+    volumes:
+      - ./server/app:${SERVER_WORKDIR}/app
+      - ./server/config:${SERVER_WORKDIR}/config
+      - ./server/routes:${SERVER_WORKDIR}/routes
+      - ./server/database:${SERVER_WORKDIR}/database
+      - ./server/test:${SERVER_WORKDIR}/test
   nginx:
     container_name: dnd_nginx
     image: nginx:latest
@@ -37,12 +43,18 @@ services:
     build:
       context: .
       dockerfile: ./_docker/client/Dockerfile
+      target: ${CLIENT_STAGE}
     ports:
       - target: 8080
         published: 8080
         protocol: tcp
     depends_on:
       - nginx
+    volumes:
+      - ./client/src/components:${CLIENT_WORKDIR}/src/components
+      - ./client/src/router:${CLIENT_WORKDIR}/src/router
+      - ./client/src/stores:${CLIENT_WORKDIR}/src/stores
+      - ./client/src/views:${CLIENT_WORKDIR}/src/views
   ws:
     container_name: dnd_ws
     restart: always

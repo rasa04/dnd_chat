@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import RegisterView from "@/views/RegisterView.vue";
 import LoginView from "@/views/LoginView.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import axios from "axios";
 import {useUserStore} from "@/stores/user";
 
@@ -11,10 +11,18 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: ProfileView,
       meta: {
         auth: true
       }
+    },
+    {
+      path: '/game/:game_id',
+      name: 'game',
+      component: () => import('../views/GameView.vue'),
+      meta: {
+        auth: true
+      },
     },
     {
       path: '/profile',
@@ -47,23 +55,18 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some(record => record.meta.auth)) { // is route protected
     if(token) { // is token exist
-      axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
+      axios.get(`${endpoint}/api/v1/user`, {headers: {'Authorization': token}})
       .then((res) => {
         next()
         user.data = res.data
-        console.log(user.data)
-        console.log('authorized')
       })
-      .catch(() => {
-        next({ name: 'login' })
-        console.log('Unauthorized')
-      })
+      .catch(() => next({ name: 'login' }))
+    } else {
+      next({ name: 'login' });
     }
-    else next({ name: 'login' });
-  }
-  else {
+  } else {
     if(token) { // is token exist
-      axios.get(`${endpoint}/api/user`, {headers: {'Authorization': token}})
+      axios.get(`${endpoint}/api/v1/user`, {headers: {'Authorization': token}})
           .then(() => next({name: 'profile'}))
           .catch(() => next())
     }

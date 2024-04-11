@@ -11,16 +11,18 @@ use Illuminate\Support\Facades\Auth;
 
 final class MessageController extends Controller
 {
-    public function index(): array
+    public function index(int $gameId): array
     {
-        return MessageResource::collection(Message::all())->resolve();
+        return MessageResource::collection(
+            Message::query()->where('game_id', '=', $gameId)->get()
+        )->resolve();
     }
 
     public function store(StoreRequest $request): array
     {
         return MessageResource::make(
             Message::query()->create([
-                'from' => Auth::id(),
+                'user_id' => Auth::id(),
                 ...$request->validated(),
             ])
         )->resolve();

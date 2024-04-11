@@ -16,6 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
+        if (
+            User::query()->count('id') > 0
+            && Game::query()->count('id') > 0
+            && Message::query()->count('id') > 0
+        ) {
+            return;
+        }
+
         $users = User::factory()
             ->count(100)
             ->create();

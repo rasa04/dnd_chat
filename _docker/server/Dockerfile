@@ -35,4 +35,4 @@ EXPOSE 9000
 RUN curl -LOk https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     && chmod +x ./wait-for-it.sh
 
-CMD [ "bash", "-c", "./wait-for-it.sh --host=mysql --port=3307 -- php artisan migrate --seed && php-fpm" ]
+CMD [ "bash", "-c", "./wait-for-it.sh --timeout=3 --host=mysql --port=3307 -- php artisan migrate --seed && php-fpm" ]

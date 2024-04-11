@@ -92,7 +92,7 @@ export default {
       // ES10 CODE
       let data = Object.fromEntries(Object.entries(this.credentials).filter(([_, field]) => field !== null))
 
-      axios.post(`${import.meta.env.VITE_API_URL}/api/register`, data)
+      axios.post(`${import.meta.env.VITE_API_URL}/api/v1/register`, data)
       .then(res => {
         localStorage.setItem('TOKEN', 'Bearer ' + res.data.data.token)
         router.push({

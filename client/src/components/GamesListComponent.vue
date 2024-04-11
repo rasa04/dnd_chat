@@ -65,7 +65,7 @@ export default {
   },
 
   created() {
-    axios.get(`${import.meta.env.VITE_API_URL}/api/game`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/v1/game`, {
           headers: {Authorization: localStorage.getItem('TOKEN')}
         })
         .then(res => {

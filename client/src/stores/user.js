@@ -14,14 +14,9 @@ export const useUserStore = defineStore('user', {
       this.data.games.unshift(game)
     },
     refresh() {
-      axios.get(`${import.meta.env.VITE_API_URL}/api/user`, {
+      axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user`, {
         headers: {'Authorization': localStorage.getItem('TOKEN')}
-      })
-      .then(res => {
-        this.data = res.data
-        console.log('-------data--------')
-        console.log(this.data)
-      })
+      }).then(res => this.data = res.data)
     }
   },
 })

@@ -8,10 +8,10 @@
           <p class="text-gray-700">{{ user.email }}</p>
           <p class="text-gray-700">Bio</p>
         </div>
-        <h2 class="text-lg font-bold text-center mb-2 text-second-color">MY GAMES</h2>
+        <h2 class="text-lg font-bold text-center mb-2 text-second-color">My Games</h2>
         <div class="flex flex-col bg-gray-200 p-4 rounded-lg h-36 overflow-auto">
             <RouterLink v-for="game in user.games" class="text-blue-500 hover:underline decoration-sky-500"
-                        :to="{name: 'home'}">{{ game.name }}</RouterLink>
+                        :to="{name: 'game', params: {game_id: game.id}}">{{ game.name }}</RouterLink>
         </div>
       </div>
       <div class="flex select-none pointer-events-auto text-lg bg-second-color font-semibold
@@ -104,7 +104,7 @@ export default {
   methods: {
     joinGame() {
       axios.post(
-          `${import.meta.env.VITE_API_URL}/api/game/join`,
+          `${import.meta.env.VITE_API_URL}/api/v1/game/join`,
           {
               id: this.gameId,
               password: this.password
@@ -125,7 +125,7 @@ export default {
 
     createGame() {
       axios.post(
-        `${import.meta.env.VITE_API_URL}/api/game`,
+        `${import.meta.env.VITE_API_URL}/api/v1/game`,
         {
           name: this.gameName,
           description: this.gameDescription,
@@ -151,7 +151,7 @@ export default {
     },
 
     logout() {
-      axios.post(`${import.meta.env.VITE_API_URL}/api/logout`, {}, {
+      axios.post(`${import.meta.env.VITE_API_URL}/api/v1/logout`, {}, {
         headers: {Authorization: localStorage.getItem('TOKEN')}
       })
       .then(res => {

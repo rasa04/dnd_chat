@@ -58,8 +58,14 @@ final readonly class GameService
         return false;
     }
 
-    public static function get(int $limit = 50): Collection
+    public static function getGames(int $limit = 50): Collection
     {
         return Game::query()->limit($limit)->get();
+    }
+
+    public static function byId(int $id): ?Game
+    {
+        /** @var Game */
+        return Game::query()->firstWhere('id', '=', $id);
     }
 }
