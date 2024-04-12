@@ -4,7 +4,7 @@
       style="background-image: url('./src/assets/img/background.jpg')"
     >
       <div v-for="message in messages">
-        <MessageComponent :message="message" :fromAnotherPlayer="message === this.user.id" />
+        <MessageComponent :message="message" :fromAnotherPlayer="message.from !== this.user.id" />
       </div>
     </div>
     <div class="flex justify-center items-center p-4 bg-second-color">
@@ -36,11 +36,28 @@ export default {
     return {
       messages: [],
       user: null,
-      message: ''
+      message: '',
+      socket: WebSocket
     }
   },
 
   created() {
+    // Setting up websocket connection
+    this.socket = new WebSocket('ws://localhost:8081/ws?group_id=' + this.$route.params.game_id);
+
+    this.socket.addEventListener('open', () => this.socket.send(
+      'opening connection to group by id:' + this.$route.params.game_id
+    ));
+    this.socket.addEventListener('message', (event) => {
+      let new_message = JSON.parse(event.data)
+      this.messages.unshift({
+        body: new_message.body,
+        from: new_message.from,
+        time: this.formatTime(new_message.time)
+      })
+    });
+    this.socket.addEventListener('close', () => console.log('WebSocket connection is closed'));
+
     this.user = useUserStore().data
     axios.get(
         `${import.meta.env.VITE_API_URL}/api/v1/messages/` + this.$route.params.game_id,
@@ -55,22 +72,47 @@ export default {
 
   methods: {
     send() {
-      axios.post(`${import.meta.env.VITE_API_URL}/api/v1/messages`,
-          {
-            body: this.message,
-            game_id: this.$route.params.game_id
-          },
-          {
-            headers: {
-              Authorization: localStorage.getItem('TOKEN')
-            }
-          }
-      ).then(res => {
-        console.log(res)
-        this.messages.shift(res.data)
+      const messageData = {
+        body: this.message,
+        from: this.user.id,
+        time: new Date().toISOString() // Assuming you want to send the current timestamp
+      };
+
+      this.socket.send(JSON.stringify(messageData))
+
+      this.messages.unshift({
+        body: this.message,
+        from: this.user.id,
+        time: this.formatTime(messageData.time)
       })
+
       this.message = ''
     },
+
+    // For now, formatting time in real time messages and messages, gotten through ajax request are different.
+    // Hope in feature i fix it.
+    formatTime(isoTimestamp) {
+      const date = new Date(isoTimestamp);
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+
+      if (diffInSeconds < 60) {
+        return "just now";
+      } else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return minutes === 1 ? "1 minute ago" : `${minutes} minutes ago`;
+      } else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+      } else {
+        // Format timestamp as just time (e.g., 12:21)
+        const options = {
+          hour: '2-digit',
+          minute: '2-digit'
+        };
+        return date.toLocaleTimeString('en-US', options);
+      }
+    }
   }
 }
 </script>
