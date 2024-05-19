@@ -9,7 +9,7 @@ use WebSocket\Client;
 
 final class WebsocketService
 {
-    public const WEBSOCKET_URL_PATTERN = 'ws://%s:%s/ws?group_id=%s';
+    public const WEBSOCKET_URL_PATTERN = '%s://%s:%s/ws?group_id=%s';
 
     /**
      * @throws BadOpcodeException
@@ -20,6 +20,7 @@ final class WebsocketService
             new Client(
                 sprintf(
                     self::WEBSOCKET_URL_PATTERN,
+                    config('services.websocket.protocol'),
                     config('services.websocket.host'),
                     config('services.websocket.port'),
                     $groupId
