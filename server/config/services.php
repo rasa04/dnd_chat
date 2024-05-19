@@ -32,6 +32,7 @@ return [
     ],
 
     'websocket' => [
+        'protocol' => env('WEBSOCKET_PROTOCOL', 'ws'),
         'host' => env('WEBSOCKET_HOST', 'ws'),
         'port' => env('WEBSOCKET_PORT', 8081),
     ]
