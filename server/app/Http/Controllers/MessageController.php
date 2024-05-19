@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Models\Message;
+use App\Queue\Enum\QueuesEnum;
+use App\Services\Queue\RabbitService;
 use Illuminate\Support\Facades\Auth;
 
 final class MessageController extends Controller
@@ -20,11 +22,10 @@ final class MessageController extends Controller
 
     public function store(StoreRequest $request): array
     {
-        return MessageResource::make(
-            Message::query()->create([
-                'user_id' => Auth::id(),
-                ...$request->validated(),
-            ])
-        )->resolve();
+        $message = $request->validated();
+        $message['user_id'] = Auth::id();
+        (new RabbitService())->publish(['message' => $message], QueuesEnum::HANDLE_MESSAGES);
+
+        return MessageResource::make(Message::query()->create($message))->resolve();
     }
 }

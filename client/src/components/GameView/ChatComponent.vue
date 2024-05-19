@@ -72,21 +72,22 @@ export default {
 
   methods: {
     send() {
-      const messageData = {
-        body: this.message,
-        from: this.user.id,
-        time: new Date().toISOString() // Assuming you want to send the current timestamp
-      };
+      axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/messages/`,
+        {
+          body: this.message,
+          game_id: this.$route.params.game_id
+        },
+        {headers: {Authorization: localStorage.getItem('TOKEN')}}
+      ).then(response => {
+        this.messages.unshift({
+          body: this.message,
+          from: this.user.id,
+          time: response.time
+        })
 
-      this.socket.send(JSON.stringify(messageData))
-
-      this.messages.unshift({
-        body: this.message,
-        from: this.user.id,
-        time: this.formatTime(messageData.time)
+        this.message = ''
       })
-
-      this.message = ''
     },
 
     // For now, formatting time in real time messages and messages, gotten through ajax request are different.

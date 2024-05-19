@@ -1,5 +1,19 @@
 version: '3.8'
 
+x-server:
+  &x-server
+    build:
+      context: .
+      dockerfile: ./_docker/server/Dockerfile
+    depends_on:
+      - dnd_database
+    volumes:
+      - ./server/app:${SERVER_WORKDIR}/app
+      - ./server/config:${SERVER_WORKDIR}/config
+      - ./server/routes:${SERVER_WORKDIR}/routes
+      - ./server/database:${SERVER_WORKDIR}/database
+      - ./server/test:${SERVER_WORKDIR}/test
+
 services:
   dnd_database:
     container_name: dnd_database
@@ -12,19 +26,18 @@ services:
     env_file:
       - .env
   server:
-    container_name: dnd_server
+    <<: *x-server
     restart: always
-    build:
-      context: .
-      dockerfile: ./_docker/server/Dockerfile
-    depends_on:
-      - dnd_database
-    volumes:
-      - ./server/app:${SERVER_WORKDIR}/app
-      - ./server/config:${SERVER_WORKDIR}/config
-      - ./server/routes:${SERVER_WORKDIR}/routes
-      - ./server/database:${SERVER_WORKDIR}/database
-      - ./server/test:${SERVER_WORKDIR}/test
+    container_name: dnd_server
+  consumer:
+    <<: *x-server
+    container_name: worker_handle_messages
+    restart: always
+    command: [
+      "php",
+      "artisan",
+      "app:handle-messages-worker"
+    ]
   nginx:
     container_name: dnd_nginx
     image: nginx:latest
@@ -67,6 +80,15 @@ services:
         protocol: tcp
     volumes:
       - ./ws:/var/www/ws
+  queue:
+    image: rabbitmq:3-management
+    container_name: dnd_queue
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
   ngrok:
     container_name: dnd_ngrok
     image: ngrok/ngrok:latest

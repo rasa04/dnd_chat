@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'websocket' => [
+        'host' => env('WEBSOCKET_HOST', 'ws'),
+        'port' => env('WEBSOCKET_PORT', 8081),
+    ]
 ];

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    'default' => env('QUEUE_CONNECTION', 'rabbit'),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,6 +71,13 @@ return [
             'after_commit' => false,
         ],
 
+        'rabbit' => [
+            'driver' => 'rabbit',
+            'host' => env('RABBITMQ_HOST', 'dnd_queue'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'user' => env('RABBITMQ_LOGIN', 'user'),
+            'password' => env('RABBITMQ_PASSWORD', 'pass'),
+        ],
     ],
 
     /*
