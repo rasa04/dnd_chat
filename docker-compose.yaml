@@ -1,5 +1,3 @@
-version: '3.8'
-
 x-server:
   &x-server
     build:
@@ -89,26 +87,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
-  ngrok:
-    container_name: dnd_ngrok
-    image: ngrok/ngrok:latest
-    restart: unless-stopped
-    command:
-      - 'start'
-      - '--all'
-      - '--config'
-      - '/etc/ngrok.yml'
-    volumes:
-      - ./_docker/ngrok/ngrok.yaml:/etc/ngrok.yml
-      - ./_docker/ngrok/ngrok.log:/var/log/ngrok.log
-    ports:
-      - target: 4040
-        published: 4040
-        protocol: tcp
-    depends_on:
-      - client
-      - nginx
-      - ws
 
 networks:
   server-tier:
