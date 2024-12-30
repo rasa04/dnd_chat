@@ -7,7 +7,6 @@ namespace App\Console\Workers;
 use App\Exceptions\IncorrectMessageWorkloadException;
 use App\ObjectValue\HandleMessageTask;
 use App\Queue\Enum\QueuesEnum;
-use App\Services\Queue\RabbitService;
 use App\Services\WebsocketService;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
@@ -17,15 +16,13 @@ final class HandleMessagesWorker extends AbstractWorker
 {
     protected $signature = 'app:handle-messages-worker';
     protected $description = 'Command description';
-    protected ?QueuesEnum $queueName = QueuesEnum::HANDLE_MESSAGES;
-    protected ?string $queueConnectionName = RabbitService::class;
 
     /**
      * @throws BadOpcodeException
      * @throws Throwable
      * @throws IncorrectMessageWorkloadException
      */
-    public function process(AMQPMessage $message): void
+    public function handleMessages(AMQPMessage $message): void
     {
         $this->info(sprintf('Handling message task - %s', $message->getBody()));
         $task = HandleMessageTask::fromWorkload($message->getBody());
@@ -35,5 +32,12 @@ final class HandleMessagesWorker extends AbstractWorker
 
         $message->ack();
         $this->info('Messaged sent');
+    }
+
+    public function getQueueHandlers(): array
+    {
+        return [
+            QueuesEnum::HANDLE_MESSAGES->value => [$this, 'handleMessages'],
+        ];
     }
 }

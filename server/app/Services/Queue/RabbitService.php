@@ -6,6 +6,7 @@ namespace App\Services\Queue;
 
 use App\ObjectValue\TaskInterface;
 use App\Queue\Enum\QueuesEnum;
+use App\Queue\Exception\QueueNameNotSetException;
 use ErrorException;
 use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -34,11 +35,14 @@ final class RabbitService implements QueueInterface
 
     /**
      * @inheritDoc
-     * @throws ErrorException
+     * @throws ErrorException|QueueNameNotSetException
      */
     public function consume(array $queueHandlers): void
     {
         foreach ($queueHandlers as $queueName => $handler) {
+            if (!is_string($queueName)) {
+                throw new QueueNameNotSetException();
+            }
             $this->channel->queue_declare(queue: $queueName, auto_delete: false);
             $this->channel->basic_consume(
                 queue: $queueName,
