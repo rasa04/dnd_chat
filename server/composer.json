@@ -8,6 +8,7 @@
         "php": "^8.2",
         "ext-sockets": "*",
         "fakerphp/faker": "^1.23",
+        "fig/http-message-util": "^1.1",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^10.48",
         "laravel/sanctum": "^3.3",
