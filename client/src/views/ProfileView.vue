@@ -25,7 +25,7 @@ export default {
 
   data() {
     return {
-      background_video: Math.floor(Math.random() * 2)+1
+      background_video: ~~(Math.random() * 3) + 1
     }
   }
 }
