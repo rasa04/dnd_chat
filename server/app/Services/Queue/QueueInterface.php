@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\Services\Queue;
 
+use App\ObjectValue\TaskInterface;
 use App\Queue\Enum\QueuesEnum;
 
 interface QueueInterface
 {
-    public function publish(array $data, QueuesEnum $queuesEnum): void;
-    public function consume(callable $processCallback, QueuesEnum $queuesEnum): void;
+    public function publish(TaskInterface $task, QueuesEnum $queueName): void;
+
+    /**
+     * @var array $handlersQueue {
+     *     value of @see \App\Queue\Enum\QueuesEnum => callback
+     * }
+     */
+    public function consume(array $queueHandlers): void;
 }

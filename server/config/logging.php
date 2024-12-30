@@ -49,6 +49,11 @@ return [
     */
 
     'channels' => [
+        'monolog' => [
+            'driver' => 'monolog',
+            'path' => storage_path('logs/context.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
         'console' => [
             'driver' => 'monolog',
             'path' => 'php://stdout',

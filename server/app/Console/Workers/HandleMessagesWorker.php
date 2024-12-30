@@ -25,9 +25,8 @@ final class HandleMessagesWorker extends AbstractWorker
      * @throws Throwable
      * @throws IncorrectMessageWorkloadException
      */
-    public function process($message): void
+    public function process(AMQPMessage $message): void
     {
-        /** @var AMQPMessage $message */
         $this->info(sprintf('Handling message task - %s', $message->getBody()));
         $task = HandleMessageTask::fromWorkload($message->getBody());
 

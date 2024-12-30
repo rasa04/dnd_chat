@@ -4,25 +4,30 @@ x-server:
       context: .
       dockerfile: ./_docker/server/Dockerfile
     depends_on:
-      - dnd_database
+      - database
+      - queue
     volumes:
       - ./server/app:${SERVER_WORKDIR}/app
       - ./server/config:${SERVER_WORKDIR}/config
       - ./server/routes:${SERVER_WORKDIR}/routes
       - ./server/database:${SERVER_WORKDIR}/database
       - ./server/test:${SERVER_WORKDIR}/test
+    networks:
+      - dnd-server-network
 
 services:
-  dnd_database:
+  database:
     container_name: dnd_database
     image: library/mysql:latest
     restart: always
     ports:
       - target: 3306
-        published: 3307
+        published: 3306
         protocol: tcp
     env_file:
       - .env
+    networks:
+      - dnd-server-network
   server:
     <<: *x-server
     restart: always
@@ -48,6 +53,8 @@ services:
         protocol: tcp
     depends_on:
       - server
+    networks:
+      - dnd-server-network
   client:
     container_name: dnd_client
     restart: always
@@ -78,6 +85,8 @@ services:
         protocol: tcp
     volumes:
       - ./ws:/var/www/ws
+    networks:
+      - dnd-server-network
   queue:
     image: rabbitmq:3-management
     container_name: dnd_queue
@@ -87,7 +96,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+    networks:
+      - dnd-server-network
 
 networks:
-  server-tier:
+  dnd-server-network:
     driver: bridge

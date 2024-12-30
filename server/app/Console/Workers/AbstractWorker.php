@@ -10,6 +10,7 @@ use App\Queue\Exception\QueueNameNotSetException;
 use App\Services\Queue\QueueInterface;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
+use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 
 abstract class AbstractWorker extends Command
@@ -18,9 +19,10 @@ abstract class AbstractWorker extends Command
     protected ?string $queueConnectionName = null;
     protected QueueInterface $queue;
 
-    public function __construct()
+    public function __construct(QueueInterface $queue)
     {
         parent::__construct();
+        $this->queue = $queue;
     }
 
     /**
@@ -39,9 +41,7 @@ abstract class AbstractWorker extends Command
 
         try {
             $this->info('Waiting for messages. To exit press CTRL+C');
-            $this->queue = new $this->queueConnectionName;
-
-            $this->queue->consume([$this, 'process'], QueuesEnum::HANDLE_MESSAGES);
+            $this->queue->consume($this->getQueueHandlers());
         } catch (AMQPTimeoutException $timeoutException) {
             $this->error(
                 sprintf(
@@ -62,5 +62,12 @@ abstract class AbstractWorker extends Command
         }
     }
 
-    abstract public function process($message): void;
+    abstract public function process(AMQPMessage $message): void;
+
+    private function getQueueHandlers(): array
+    {
+        return [
+            QueuesEnum::HANDLE_MESSAGES->value => [$this, 'process']
+        ];
+    }
 }

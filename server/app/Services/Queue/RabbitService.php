@@ -4,51 +4,47 @@ declare(strict_types=1);
 
 namespace App\Services\Queue;
 
+use App\ObjectValue\TaskInterface;
 use App\Queue\Enum\QueuesEnum;
 use ErrorException;
 use Exception;
-use PhpAmqpLib\Channel\AbstractChannel;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
 final class RabbitService implements QueueInterface
 {
-    protected AMQPStreamConnection $connection;
-    protected AbstractChannel $channel;
+    protected AMQPChannel $channel;
 
     /**
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(AMQPChannel $channel)
     {
-        $queueConfig = config('queue.connections.rabbit');
-
-        $this->connection = new AMQPStreamConnection(
-            host: $queueConfig['host'],
-            port: $queueConfig['port'],
-            user: $queueConfig['user'],
-            password: $queueConfig['password']
-        );
-
-        $this->channel = $this->connection->channel();
+        $this->channel = $channel;
     }
 
-    public function publish(array $data, QueuesEnum $queuesEnum): void
+    public function publish(TaskInterface $task, QueuesEnum $queueName): void
     {
-        $this->channel->queue_declare(queue: $queuesEnum->value, auto_delete: false);
-        $this->channel->basic_publish(new AMQPMessage(json_encode($data)), '', $queuesEnum->value);
+        $this->channel->queue_declare($queueName->value, auto_delete: false);
+        $this->channel->basic_publish(
+            new AMQPMessage($task->toWorkload()),
+            routing_key: $queueName->value
+        );
     }
 
     /**
+     * @inheritDoc
      * @throws ErrorException
      */
-    public function consume(callable $processCallback, QueuesEnum $queuesEnum): void
+    public function consume(array $queueHandlers): void
     {
-        $this->channel->queue_declare(queue: $queuesEnum->value, auto_delete: false);
-        $this->channel->basic_consume(
-            queue: $queuesEnum->value,
-            callback: $processCallback
-        );
+        foreach ($queueHandlers as $queueName => $handler) {
+            $this->channel->queue_declare(queue: $queueName, auto_delete: false);
+            $this->channel->basic_consume(
+                queue: $queueName,
+                callback: $handler
+            );
+        }
 
         $this->channel->consume();
     }
@@ -59,7 +55,5 @@ final class RabbitService implements QueueInterface
     public function __destruct()
     {
         $this->channel->close();
-        $this->connection->close();
-        logger('Connection closed.');
     }
 }

@@ -77,6 +77,11 @@ return [
             'port' => env('RABBITMQ_PORT', 5672),
             'user' => env('RABBITMQ_LOGIN', 'user'),
             'password' => env('RABBITMQ_PASSWORD', 'pass'),
+            'options' => [
+                'ssl_options' => [
+                    'ssl_on' => false,
+                ],
+            ],
         ],
     ],
 

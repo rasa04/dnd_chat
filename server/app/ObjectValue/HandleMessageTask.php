@@ -25,12 +25,19 @@ final class HandleMessageTask implements TaskInterface
      */
     public static function fromWorkload(string $workload): TaskInterface
     {
-        $workload = json_decode($workload, true);
-        if (!isset($workload['message'])) {
+        $data = json_decode($workload, true);
+        if (!isset($data['message'])) {
             throw new IncorrectMessageWorkloadException;
         }
-        $message = $workload['message'];
 
+        return self::fromArray($data['message']);
+    }
+
+    /**
+     * @throws IncorrectMessageWorkloadException
+     */
+    public static function fromArray(array $message): TaskInterface
+    {
         if (!isset($message['body'], $message['game_id'], $message['user_id'])) {
             throw new IncorrectMessageWorkloadException;
         }
@@ -44,11 +51,15 @@ final class HandleMessageTask implements TaskInterface
 
     public function toWorkload(): string
     {
-        return json_encode([
-            'body' => $this->getBody(),
-            'game_id' => $this->getGameID(),
-            'user_id' => $this->getUserID(),
-        ]);
+        return json_encode(
+            [
+                'message' => [
+                    'body' => $this->getBody(),
+                    'game_id' => $this->getGameID(),
+                    'user_id' => $this->getUserID(),
+                ],
+            ]
+        );
     }
 
     public function getUserID(): int

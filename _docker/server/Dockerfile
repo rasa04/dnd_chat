@@ -19,21 +19,24 @@ RUN apt-get update && apt-get install -y \
 # Setting up volumes
 COPY ../../server ${WORK_DIR}
 COPY ../../server/.env.example ${WORK_DIR}/.env
+COPY _docker/server/entrypoint.sh /usr/local/bin/entrypoint.sh
+
 RUN rm -dfr ${WORK_DIR}/vendor \
-    && find ${WORK_DIR}/bootstrap/cache -type f -not -name ".gitignore" -exec rm -f {} + \
-    && chmod -R 777 ${WORK_DIR}/storage \
-    && chmod -R 777 ${WORK_DIR}/bootstrap/cache
+&& find ${WORK_DIR}/bootstrap/cache -type f -not -name ".gitignore" -exec rm -f {} + \
+&& chmod -R 777 ${WORK_DIR}/storage \
+&& chmod -R 777 ${WORK_DIR}/bootstrap/cache
 
 # Installing Composer
 WORKDIR ${WORK_DIR}
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer install --no-dev --no-scripts --no-progress --no-interaction -o \
-    && php artisan key:generate
+&& composer install --no-dev --no-scripts --no-progress --no-interaction -o 
 
 EXPOSE 9000
 
 # Running migratrions and seeders
 RUN curl -LOk https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
-    && chmod +x ./wait-for-it.sh
+&& chmod +x ./wait-for-it.sh
 
-CMD [ "bash", "-c", "./wait-for-it.sh --timeout=3 --host=mysql --port=3307 -- php artisan migrate --seed && php-fpm" ]
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+CMD ["bash", "/usr/local/bin/entrypoint.sh"]

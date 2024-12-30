@@ -159,6 +159,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\RabbitMQServiceProvider::class,
 
         /*
          * Application Service Providers...
