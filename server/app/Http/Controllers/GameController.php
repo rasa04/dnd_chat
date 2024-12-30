@@ -11,6 +11,7 @@ use App\Http\Resources\GameResource;
 use App\Models\User;
 use App\Services\GameService;
 use Exception;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,7 +46,9 @@ final class GameController extends Controller
     public function join(JoinRequest $request): Response
     {
         return new Response(
-            status: GameService::join($request->validated()) ? 201 : 403
+            status: GameService::join($request->validated())
+                ? StatusCodeInterface::STATUS_ACCEPTED
+                : StatusCodeInterface::STATUS_FORBIDDEN
         );
     }
 
@@ -53,7 +56,7 @@ final class GameController extends Controller
     {
         $data = $request->validated();
 
-        return new Response(status: 201);
+        return new Response(status: StatusCodeInterface::STATUS_CREATED);
     }
 
 }
