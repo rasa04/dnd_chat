@@ -7,26 +7,25 @@ namespace App\Http\Controllers;
 use App\Exceptions\IncorrectMessageWorkloadException;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Resources\Message\MessageResource;
-use App\Models\Message;
 use App\ObjectValue\HandleMessageTask;
 use App\Queue\Enum\QueuesEnum;
+use App\Repositories\MessagesRepository;
 use App\Services\Queue\QueueInterface;
 use Illuminate\Support\Facades\Auth;
 
 final class MessageController extends Controller
 {
-    private QueueInterface $queueService;
-
-    public function __construct(QueueInterface $queueService)
-    {
-        $this->queueService = $queueService;
+    public function __construct(
+        private readonly QueueInterface $queueService,
+        private readonly MessagesRepository $messagesRepository
+    ) {
     }
 
     public function index(int $gameId): array
     {
-        return MessageResource::collection(
-            Message::query()->where('game_id', '=', $gameId)->get()
-        )->resolve();
+        return MessageResource::makeResolvedByCollection(
+            $this->messagesRepository->findByGameId($gameId)
+        );
     }
 
     /**
@@ -42,6 +41,8 @@ final class MessageController extends Controller
             QueuesEnum::HANDLE_MESSAGES
         );
 
-        return MessageResource::make(Message::query()->create($message))->resolve();
+        return MessageResource::makeResolvedByModel(
+            $this->messagesRepository->createOne($message)
+        );
     }
 }

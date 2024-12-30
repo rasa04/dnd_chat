@@ -19,12 +19,12 @@ final class GameController extends Controller
 {
     public function index(): array
     {
-        return GameResource::collection(GameService::getGames())->resolve();
+        return GameResource::makeResolvedByCollection(GameService::getGames());
     }
 
     public function show(int $gameId): array
     {
-        return GameResource::make(GameService::byId($gameId))->resolve();
+        return GameResource::makeResolvedByModel(GameService::byId($gameId));
     }
 
     public function myGames(): array
@@ -32,7 +32,7 @@ final class GameController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        return GameResource::collection($user->games())->resolve();
+        return GameResource::makeResolvedByCollection($user->games());
     }
 
     /**
@@ -40,7 +40,7 @@ final class GameController extends Controller
      */
     public function store(StoreRequest $request): array
     {
-        return GameResource::make(GameService::create($request->validated()))->resolve();
+        return GameResource::makeResolvedByModel(GameService::create($request->validated()));
     }
 
     public function join(JoinRequest $request): Response
@@ -56,7 +56,7 @@ final class GameController extends Controller
     {
         $data = $request->validated();
 
-        return new Response(status: StatusCodeInterface::STATUS_CREATED);
+        return new Response(status: StatusCodeInterface::STATUS_ACCEPTED);
     }
 
 }

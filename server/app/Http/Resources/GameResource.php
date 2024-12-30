@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Traits\CommonResolvesTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GameResource extends JsonResource
+final class GameResource extends JsonResource
 {
+    use CommonResolvesTrait;
+
     /**
      * Transform the resource into an array.
      *
