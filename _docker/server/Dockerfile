@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 ENV WORK_DIR /var/www/server
 ENV COMPOSER_ALLOW_SUPERUSER 1
