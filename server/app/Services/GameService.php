@@ -5,49 +5,39 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Game;
+use App\Repositories\GameRepository;
+use App\Repositories\RepositoryInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 final readonly class GameService
 {
+    public function __construct(
+        private GameRepository $gameRepository
+    ) {
+    }
+
     /**
      * @throws Exception
      */
-    public static function create(array $data): Builder|Model
+    public function create(array $data): Builder|Model
     {
-        try {
-            DB::beginTransaction();
-            /** @var Game $game */
-            $game = Game::query()->create([
-                'name' => $data['name'],
-                'description' => $data['description'],
-                'password' => Hash::make($data['password'])
-            ]);
-            $game->users()->attach(Auth::id());
-            DB::commit();
-        } catch(Exception $e) {
-            DB::rollBack();
-            throw new Exception($e->getMessage());
-        }
-
-        return $game;
+        return $this->gameRepository->createOneAndAttachUserById($data, Auth::id());
     }
 
     /**
      * @param array $data
-     * @return bool true - if joined, false - if already joined
+     * @return bool true - if joined, false - if already joined or game does not exist
      */
-    public static function join(array $data): bool
+    public function join(array $data): bool
     {
         $user = Auth::user();
         /** @var Game $game */
         if (
-            !empty($game = Game::query()->find($data['id']))
+            !empty($game = $this->gameRepository->findOneById((int)$data['id']))
             && is_null($game->users->find($user))
         ) {
             $game->users()->attach($user);
@@ -58,14 +48,13 @@ final readonly class GameService
         return false;
     }
 
-    public static function getGames(int $limit = 50): Collection
+    public function getGames(int $limit = RepositoryInterface::MAX_LIMIT): Collection
     {
-        return Game::query()->limit($limit)->get();
+        return $this->gameRepository->findMany($limit);
     }
 
-    public static function byId(int $id): ?Game
+    public function byId(int $id): ?Game
     {
-        /** @var Game */
-        return Game::query()->firstWhere('id', '=', $id);
+        return $this->gameRepository->findOneById($id);
     }
 }

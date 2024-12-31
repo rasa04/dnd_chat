@@ -9,10 +9,10 @@ use Illuminate\Support\Collection;
 
 final class UsersRepository extends AbstractRepository
 {
-    public function createOne(array $message): User
+    public function firstOrCreateOne(array $user): User
     {
         /** @var User */
-        return User::query()->create($message);
+        return User::query()->firstOrCreate($user);
     }
 
     public function getAll(): Collection

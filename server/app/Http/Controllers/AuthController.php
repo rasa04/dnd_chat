@@ -9,6 +9,8 @@ use App\Http\Requests\User\RegisterRequest;
 use App\Http\Resources\AuthResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Repositories\UsersRepository;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +19,18 @@ use Illuminate\Validation\ValidationException;
 
 final class AuthController extends Controller
 {
+    public function __construct(
+        private readonly UsersRepository $usersRepository
+    ) {
+    }
+
     public function register(RegisterRequest $request): JsonResource
     {
-        return new AuthResource(User::query()->firstOrCreate($request->validated()));
+        return new AuthResource(
+            $this->usersRepository->firstOrCreateOne(
+                $request->validated()
+            )
+        );
     }
 
     /**
@@ -42,16 +53,16 @@ final class AuthController extends Controller
 
     public function logout(): Response
     {
-        /** @var User */
-        $user = Auth::user();
-        $user->currentAccessToken();
-        $user->delete();
+        Auth::user()->currentAccessToken()->delete();
 
-        return new Response(status: 201);
+        return new Response(status: StatusCodeInterface::STATUS_NO_CONTENT);
     }
 
     public function user(): array
     {
-        return UserResource::make(Auth::user())->resolve();
+        /** @var User $user */
+        $user = Auth::user();
+
+        return UserResource::makeResolvedByModel($user);
     }
 }

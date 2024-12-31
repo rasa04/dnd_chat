@@ -17,14 +17,19 @@ use Illuminate\Support\Facades\Auth;
 
 final class GameController extends Controller
 {
+    public function __construct(
+        private readonly GameService $gameService
+    ) {
+    }
+
     public function index(): array
     {
-        return GameResource::makeResolvedByCollection(GameService::getGames());
+        return GameResource::makeResolvedByCollection($this->gameService->getGames());
     }
 
     public function show(int $gameId): array
     {
-        return GameResource::makeResolvedByModel(GameService::byId($gameId));
+        return GameResource::makeResolvedByModel($this->gameService->byId($gameId));
     }
 
     public function myGames(): array
@@ -40,13 +45,17 @@ final class GameController extends Controller
      */
     public function store(StoreRequest $request): array
     {
-        return GameResource::makeResolvedByModel(GameService::create($request->validated()));
+        return GameResource::makeResolvedByModel(
+            $this->gameService->create(
+                $request->validated()
+            )
+        );
     }
 
     public function join(JoinRequest $request): Response
     {
         return new Response(
-            status: GameService::join($request->validated())
+            status: $this->gameService->join($request->validated())
                 ? StatusCodeInterface::STATUS_ACCEPTED
                 : StatusCodeInterface::STATUS_FORBIDDEN
         );
