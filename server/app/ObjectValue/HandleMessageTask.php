@@ -9,15 +9,33 @@ use Carbon\Carbon;
 
 final class HandleMessageTask implements TaskInterface
 {
-    private string $body;
-    private int $gameID;
-    private int $userID;
+    public const string GAME_ID = 'g_id';
+    public const string USER_ID = 'u_id';
+    public const string BODY = 'body';
 
-    public function __construct(string $body, int $gameID, int $userID)
+    public string $toSendViaWS
     {
-        $this->body = $body;
-        $this->gameID = $gameID;
-        $this->userID = $userID;
+        get => json_encode([
+            self::BODY => $this->body,
+            'from' => $this->userID,
+            'time' => Carbon::now()->toISOString(),
+        ]);
+    }
+
+    public string $toWorkload
+    {
+        get => json_encode([
+            self::BODY => $this->body,
+            self::GAME_ID => $this->gameID,
+            self::USER_ID => $this->userID,
+        ]);
+    }
+
+    public function __construct(
+        public readonly string $body,
+        public readonly int $gameID,
+        public readonly int $userID
+    ) {
     }
 
     /**
@@ -25,79 +43,16 @@ final class HandleMessageTask implements TaskInterface
      */
     public static function fromWorkload(string $workload): TaskInterface
     {
-        $data = json_decode($workload, true);
-        if (!isset($data['message'])) {
+        $message = json_decode($workload, true);
+        if (!isset($message[self::BODY], $message[self::GAME_ID], $message[self::USER_ID])) {
             throw new IncorrectMessageWorkloadException;
         }
 
-        return self::fromArray($data['message']);
+        return new self((string)$message[self::BODY], (int)$message[self::GAME_ID], (int)$message[self::USER_ID]);
     }
 
-    /**
-     * @throws IncorrectMessageWorkloadException
-     */
-    public static function fromArray(array $message): TaskInterface
+    public static function create(string $body, int $gameID, int $userID): TaskInterface
     {
-        if (!isset($message['body'], $message['game_id'], $message['user_id'])) {
-            throw new IncorrectMessageWorkloadException;
-        }
-
-        return new self(
-            (string)$message['body'],
-            (int)$message['game_id'],
-            (int)$message['user_id']
-        );
-    }
-
-    public function toWorkload(): string
-    {
-        return json_encode(
-            [
-                'message' => [
-                    'body' => $this->getBody(),
-                    'game_id' => $this->getGameID(),
-                    'user_id' => $this->getUserID(),
-                ],
-            ]
-        );
-    }
-
-    public function getUserID(): int
-    {
-        return $this->userID;
-    }
-
-    public function setUserID(int $userID): void
-    {
-        $this->userID = $userID;
-    }
-
-    public function getGameID(): int
-    {
-        return $this->gameID;
-    }
-
-    public function setGameID(int $gameID): void
-    {
-        $this->gameID = $gameID;
-    }
-
-    public function getBody(): string
-    {
-        return $this->body;
-    }
-
-    public function setBody(string $body): void
-    {
-        $this->body = $body;
-    }
-
-    public function toSendViaWS(): string
-    {
-        return json_encode([
-            'body' => $this->getBody(),
-            'from' => $this->getUserID(),
-            'time' => Carbon::now()->toISOString(),
-        ]);
+        return new self($body, $gameID, $userID);
     }
 }

@@ -13,7 +13,7 @@ interface QueueInterface
 
     /**
      * @var array $handlersQueue {
-     *     value of @see \App\Queue\Enum\QueuesEnum => callback
+     *     value of @see QueuesEnum => callback
      * }
      */
     public function consume(array $queueHandlers): void;

@@ -14,21 +14,16 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 final class RabbitService implements QueueInterface
 {
-    protected AMQPChannel $channel;
-
-    /**
-     * @throws Exception
-     */
-    public function __construct(AMQPChannel $channel)
-    {
-        $this->channel = $channel;
+    public function __construct(
+        protected AMQPChannel $channel
+    ) {
     }
 
     public function publish(TaskInterface $task, QueuesEnum $queueName): void
     {
         $this->channel->queue_declare($queueName->value, auto_delete: false);
         $this->channel->basic_publish(
-            new AMQPMessage($task->toWorkload()),
+            new AMQPMessage($task->toWorkload),
             routing_key: $queueName->value
         );
     }

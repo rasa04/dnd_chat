@@ -7,5 +7,4 @@ namespace App\ObjectValue;
 interface TaskInterface
 {
     public static function fromWorkload(string $workload): self;
-    public function toWorkload(): string;
 }

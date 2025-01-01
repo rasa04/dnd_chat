@@ -9,22 +9,22 @@ use WebSocket\Client;
 
 final class WebsocketService
 {
-    public const WEBSOCKET_URL_PATTERN = '%s://%s:%s/ws?group_id=%s';
+    public const string WEBSOCKET_URL_PATTERN = '%s://%s:%s/ws?group_id=%s';
 
     /**
      * @throws BadOpcodeException
      */
-    public static function sendMessageToGroup(int $groupId, string $message): void
+    public function sendMessageToGroup(int $groupId, string $message): void
     {
-        (
-            new Client(
-                sprintf(
-                    self::WEBSOCKET_URL_PATTERN,
-                    config('services.websocket.protocol'),
-                    config('services.websocket.host'),
-                    config('services.websocket.port'),
-                    $groupId
-                )
+        $config = config('services.websocket');
+
+        new Client(
+            sprintf(
+                self::WEBSOCKET_URL_PATTERN,
+                $config['protocol'] ?? '',
+                $config['host'] ?? '',
+                $config['port'] ?? '',
+                $groupId
             )
         )->send($message);
     }

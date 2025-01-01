@@ -14,8 +14,16 @@ use WebSocket\BadOpcodeException;
 
 final class HandleMessagesWorker extends AbstractWorker
 {
+    /** @var string $signature */
     protected $signature = 'app:handle-messages-worker';
+    /** @var string $description */
     protected $description = 'Command description';
+
+    public function __construct(
+        private readonly WebsocketService $websocketService
+    ) {
+        parent::__construct();
+    }
 
     /**
      * @throws BadOpcodeException
@@ -28,7 +36,7 @@ final class HandleMessagesWorker extends AbstractWorker
         $task = HandleMessageTask::fromWorkload($message->getBody());
 
         $this->info('Sending via web socket');
-        WebsocketService::sendMessageToGroup($task->getGameID(), $task->toSendViaWS());
+        $this->websocketService->sendMessageToGroup($task->gameID, $task->toSendViaWS);
 
         $message->ack();
         $this->info('Messaged sent');

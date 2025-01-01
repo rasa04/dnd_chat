@@ -7,6 +7,7 @@ namespace App\Http\Resources\Message;
 use App\Http\Resources\Traits\CommonResolvesTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class MessageResource extends JsonResource
 {
@@ -15,15 +16,18 @@ class MessageResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @return array<string, mixed>
+     * @return array<string, string>
      */
     public function toArray(Request $request): array
     {
+        /** @var Carbon $time */
+        $time = $this->offsetGet('created_at');
+
         return [
-            'id' => $this->id,
-            'body' => $this->body,
-            'from' => $this->user_id,
-            'time' => $this->created_at->diffForHumans(),
+            'id' => (string)$this->offsetGet('id'),
+            'body' => $this->offsetGet('body'),
+            'from' => (string)$this->offsetGet('user_id'),
+            'time' => $time->diffForHumans(),
         ];
     }
 }

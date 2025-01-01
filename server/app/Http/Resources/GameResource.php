@@ -20,11 +20,11 @@ final class GameResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'photo_link' => $this->photo_link,
-            'participants' => UserResource::collection($this->users)->resolve()
+            'id' => $this->offsetGet('id'),
+            'name' => $this->offsetGet('name'),
+            'description' => $this->offsetGet('description'),
+            'photo_link' => $this->offsetGet('photo_link'),
+            'participants' => UserResource::makeResolvedByCollection($this->offsetGet('users'))
         ];
     }
 }

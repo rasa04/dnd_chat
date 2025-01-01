@@ -7,6 +7,7 @@ namespace App\Console\Workers;
 use App\Queue\Enum\QueuesEnum;
 use App\Services\Queue\QueueInterface;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Throwable;
 
@@ -14,16 +15,19 @@ abstract class AbstractWorker extends Command
 {
     protected QueueInterface $queue;
 
-    public function __construct(QueueInterface $queue)
+    /**
+     * @throws BindingResolutionException
+     */
+    public function __construct()
     {
+        $this->queue = app()->make(QueueInterface::class);
         parent::__construct();
-        $this->queue = $queue;
     }
 
     public function handle(): void
     {
         try {
-            $this->info('Waiting for messages. To exit press CTRL+C');
+            $this->info('Waiting for messages...');
             $this->queue->consume($this->getQueueHandlers());
         } catch (AMQPTimeoutException $timeoutException) {
             $this->error(

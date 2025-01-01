@@ -16,6 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 final class AuthController extends Controller
 {
@@ -26,11 +27,7 @@ final class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResource
     {
-        return new AuthResource(
-            $this->usersRepository->firstOrCreateOne(
-                $request->validated()
-            )
-        );
+        return new AuthResource($this->usersRepository->firstOrCreateOne($request->validated()));
     }
 
     /**
@@ -53,7 +50,12 @@ final class AuthController extends Controller
 
     public function logout(): Response
     {
-        Auth::user()->currentAccessToken()->delete();
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var PersonalAccessToken $token */
+        $token = $user->currentAccessToken();
+        $token->delete();
 
         return new Response(status: StatusCodeInterface::STATUS_NO_CONTENT);
     }

@@ -37,7 +37,11 @@ final class MessageController extends Controller
         $message['user_id'] = Auth::id();
 
         $this->queueService->publish(
-            HandleMessageTask::fromArray($message),
+            HandleMessageTask::create(
+                (string)$message['body'],
+                (int)$message['game_id'],
+                (int)$message['user_id']
+            ),
             QueuesEnum::HANDLE_MESSAGES
         );
 
