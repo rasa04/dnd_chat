@@ -87,6 +87,8 @@ services:
       - ./ws:/var/www/ws
     networks:
       - dnd-server-network
+    environment:
+      - CONFIG_PATH=${CONFIG_PATH}
   queue:
     image: rabbitmq:3-management
     container_name: dnd_queue

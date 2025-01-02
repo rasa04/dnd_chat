@@ -43,7 +43,7 @@ export default {
 
   created() {
     // Setting up websocket connection
-    this.socket = new WebSocket('ws://localhost:8081/ws?group_id=' + this.$route.params.game_id);
+    this.socket = new WebSocket('ws://localhost:8081/ws/group?id=' + this.$route.params.game_id);
 
     this.socket.addEventListener('open', () => this.socket.send(
       'opening connection to group by id:' + this.$route.params.game_id

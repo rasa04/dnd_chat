@@ -9,7 +9,7 @@ use WebSocket\Client;
 
 final class WebsocketService
 {
-    public const string WEBSOCKET_URL_PATTERN = '%s://%s:%s/ws?group_id=%s';
+    public const string WEBSOCKET_URL_PATTERN = '%s://%s:%s/ws/group?id=%s';
 
     /**
      * @throws BadOpcodeException
