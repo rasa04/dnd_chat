@@ -28,3 +28,7 @@ sql
 Копировать код
 SET GLOBAL slow_query_log = 1;
 SET GLOBAL long_query_time = 0.5; -- Логировать запросы, дольше 0.5 сек
+
+Мониторинг через сторонние инструменты:
+
+Инструменты вроде Percona Monitoring and Management (PMM) или New Relic предоставляют метрики запросов с минимальной нагрузкой на продакшн.
