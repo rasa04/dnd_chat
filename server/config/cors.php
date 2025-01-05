@@ -19,7 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:8080' // Frontend domain
+    ],
 
     'allowed_origins_patterns' => [],
 
