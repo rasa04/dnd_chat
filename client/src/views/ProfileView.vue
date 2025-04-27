@@ -1,32 +1,62 @@
 <template>
-  <div class="fixed top-0 left-0 w-screen h-screen">
-    <video autoplay loop muted class="absolute z-10 min-w-full min-h-screen">
-      <source :src="'./assets/img/auth_backgrounds/'+background_video+'.mp4'" type="video/mp4" />
-      Your browser does not support the video tag.
+  <!-- фон -->
+  <div class="fixed inset-0">
+    <video
+      autoplay
+      loop
+      muted
+      class="absolute inset-0 object-cover"
+    >
+      <source
+        :src="'/assets/img/auth_backgrounds/' + background_video + '.mp4'"
+        type="video/mp4"
+      />
     </video>
   </div>
-  <div class="absolute z-30 w-screen h-screen flex space-x-4 place-content-center bg-gray-500 opacity-90">
-    <games-list-component />
-    <profile-info-component />
+
+  <!-- контейнер для UI -->
+  <div
+    class="absolute inset-0
+           flex flex-col md:flex-row
+           h-screen
+           bg-gray-500 bg-opacity-90
+           p-4"
+  >
+    <!-- Профиль -->
+    <div
+      class="order-1
+             w-full md:w-2/3
+             mb-4 md:mb-0
+             pr-0 md:pr-4"
+    >
+      <profile-info-component />
+    </div>
+
+    <!-- Список игр -->
+    <div
+      class="order-2
+             w-full md:w-1/3
+             md:h-full
+             overflow-y-auto"
+    >
+      <games-list-component />
+    </div>
   </div>
 </template>
 
 <script>
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import GamesListComponent from "@/components/GamesListComponent.vue";
 import ProfileInfoComponent from "@/components/ProfileInfoComponent.vue";
 
 export default {
   components: {
-    ProfileInfoComponent,
     GamesListComponent,
-    FontAwesomeIcon
+    ProfileInfoComponent,
   },
-
   data() {
     return {
-      background_video: ~~(Math.random() * 3) + 1
-    }
-  }
-}
+      background_video: ~~(Math.random() * 3) + 1,
+    };
+  },
+};
 </script>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UnableToJoinTheGameException;
 use App\Http\Requests\Game\JoinRequest;
 use App\Http\Requests\Game\QuitRequest;
 use App\Http\Requests\Game\StoreRequest;
@@ -52,18 +53,20 @@ final class GameController extends Controller
         );
     }
 
-    public function join(JoinRequest $request): Response
+    public function join(JoinRequest $request): Response|array
     {
-        return new Response(
-            status: $this->gameService->join($request->validated())
-                ? StatusCodeInterface::STATUS_ACCEPTED
-                : StatusCodeInterface::STATUS_FORBIDDEN
-        );
+        try {
+            $game = $this->gameService->join($request->validated());
+        } catch (UnableToJoinTheGameException $e) {
+            return new Response($e->getMessage(), $e->getCode());
+        }
+
+        return GameResource::makeResolvedByModel($game);
     }
 
     public function quit(QuitRequest $request): Response
     {
-        $data = $request->validated();
+        $request->validated();
 
         return new Response(status: StatusCodeInterface::STATUS_ACCEPTED);
     }

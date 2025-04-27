@@ -14,7 +14,7 @@ final class GameRepository extends AbstractRepository
 {
     public function findOneById(int $id): ?Game
     {
-        /** @var Game */
+        /** @var ?Game */
         return Game::query()->firstWhere('id', '=', $id);
     }
 

@@ -7,7 +7,9 @@ namespace App\Services;
 use App\Models\Game;
 use App\Repositories\GameRepository;
 use App\Repositories\RepositoryInterface;
+use App\Exceptions\UnableToJoinTheGameException;
 use Exception;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -29,23 +31,33 @@ final readonly class GameService
     }
 
     /**
-     * @param array $data
-     * @return bool true - if joined, false - if already joined or game does not exist
+     * @throws UnableToJoinTheGameException
      */
-    public function join(array $data): bool
+    public function join(array $data): Game
     {
-        $user = Auth::user();
-        /** @var Game $game */
-        if (
-            !empty($game = $this->gameRepository->findOneById((int)$data['id']))
-            && is_null($game->users->find($user))
-        ) {
-            $game->users()->attach($user);
-
-            return true;
+        $game = $this->gameRepository->findOneById((int)$data['id']);
+        if (is_null($game)) {
+            throw new UnableToJoinTheGameException(
+                'Game not found',
+                StatusCodeInterface::STATUS_NOT_FOUND
+            );
         }
 
-        return false;
+        $user = Auth::user();
+        if ($game->users->find($user) !== null) {
+            throw new UnableToJoinTheGameException(
+                sprintf(
+                    'Game [%d] already joined for user [%d]',
+                    $game->getAttributeValue('id'),
+                    $user->getAuthIdentifier()
+                ),
+                StatusCodeInterface::STATUS_FORBIDDEN
+            );
+        }
+
+        $game->users()->attach($user);
+
+        return $game;
     }
 
     public function getGames(int $limit = RepositoryInterface::MAX_LIMIT): Collection
