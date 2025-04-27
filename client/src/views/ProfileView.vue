@@ -5,12 +5,13 @@
       autoplay
       loop
       muted
-      class="absolute inset-0 object-cover"
+      class="absolute inset-0 w-full h-full object-cover"
     >
       <source
         :src="'/assets/img/auth_backgrounds/' + background_video + '.mp4'"
         type="video/mp4"
       />
+      Your browser does not support the video tag.
     </video>
   </div>
 

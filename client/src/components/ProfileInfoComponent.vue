@@ -1,176 +1,140 @@
 <template>
-  <div class="w-full md:max-w-lg rounded-2xl shadow-lg bg-white p-6 my-6">
-    <!-- Профиль -->
-    <div class="text-center mb-6">
-      <h1 class="text-3xl font-bold text-second-color">{{ user.name }}</h1>
-      <p class="mt-2 text-gray-700">{{ user.email }}</p>
-      <p class="mt-1 text-gray-600">{{ user.bio || 'No bio provided.' }}</p>
+  <div class="w-full max-w-2xl mx-auto rounded-2xl bg-gray-100/90 p-4 sm:p-6 md:p-8 shadow-md my-6 space-y-6">
+    <!-- Верхняя панель профиля -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Аватар -->
+        <div class="w-10 h-10 rounded-md bg-gray-400 overflow-hidden"></div>
+
+        <!-- Имя + био -->
+        <div class="flex flex-col">
+          <span class="text-base font-bold text-gray-800">{{ user.name }}</span>
+          <span class="text-xs text-gray-500 truncate">{{ user.bio || 'No bio provided.' }}</span>
+        </div>
+      </div>
+
+      <!-- Кнопка выхода -->
+      <button
+        @click="logout"
+        class="text-red-700 hover:text-red-800 transition"
+        title="Logout"
+      >
+        <font-awesome-icon icon="sign-out-alt" />
+      </button>
     </div>
 
+    <!-- Email -->
+    <div class="text-center text-gray-500 text-xs">{{ user.email }}</div>
+
     <!-- Список моих игр -->
-    <h2 class="text-xl font-semibold text-second-color mb-4">My Games</h2>
-    <div class="overflow-auto bg-gray-100 p-4 rounded-lg h-36 mb-6">
-      <div class="divide-y divide-gray-200">
+    <div>
+      <h2 class="text-lg sm:text-xl font-bold text-gray-700 mb-2">My Games</h2>
+
+      <!-- ПК версия -->
+      <div class="hidden sm:block bg-gray-200 rounded-xl p-4 space-y-3 max-h-60 overflow-y-auto">
         <div
           v-for="game in user.games"
           :key="game.id"
-          class="flex items-center justify-between px-3 py-2 hover:bg-white hover:shadow-md transition-shadow cursor-pointer"
+          class="flex items-center justify-between bg-white p-3 rounded-md hover:shadow transition cursor-pointer"
         >
-          <!-- ID + ссылка -->
-          <div class="flex items-center space-x-4">
-            <span class="text-xs font-mono text-gray-500">{{ game.id }}</span>
+          <div class="flex items-center gap-3 overflow-hidden">
+            <span class="text-xs font-mono text-gray-500 truncate max-w-[80px]">{{ game.id }}</span>
             <RouterLink
               :to="{ name: 'game', params: { game_id: game.id } }"
-              class="text-blue-600 hover:text-blue-800 font-medium"
+              class="text-red-700 font-semibold hover:underline truncate"
             >
               {{ game.name }}
             </RouterLink>
           </div>
 
-          <!-- Кнопка + «Copied!» -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center gap-1 shrink-0">
             <button
               @click="copyId(game.id)"
-              class="p-1 text-gray-400 hover:text-gray-600 
-                    transition-transform duration-150 active:scale-90"
-              aria-label="Copy game ID"
+              class="text-gray-500 hover:text-gray-700 transition active:scale-90"
             >
               <font-awesome-icon :icon="copiedGameId === game.id ? 'check' : 'copy'" />
             </button>
-            <span
-              v-if="copiedGameId === game.id"
-              class="text-green-500 text-sm opacity-0 animate-fade-in"
-            >
+            <span v-if="copiedGameId === game.id" class="text-green-600 text-xs animate-fade-in">
               Copied!
             </span>
           </div>
         </div>
       </div>
+
+      <!-- Мобильная версия -->
+      <div class="block sm:hidden bg-gray-200 rounded-xl p-3 overflow-x-auto whitespace-nowrap flex space-x-3">
+        <div
+          v-for="game in user.games"
+          :key="game.id"
+          class="inline-flex flex-col items-center bg-white p-2 rounded-md hover:shadow transition min-w-[120px]"
+        >
+          <span class="text-[10px] font-mono text-gray-500 truncate">{{ game.id }}</span>
+          <RouterLink
+            :to="{ name: 'game', params: { game_id: game.id } }"
+            class="text-red-700 font-semibold text-sm hover:underline mt-1 truncate"
+          >
+            {{ game.name }}
+          </RouterLink>
+          <button
+            @click="copyId(game.id)"
+            class="text-gray-500 hover:text-gray-700 mt-2"
+          >
+            <font-awesome-icon :icon="copiedGameId === game.id ? 'check' : 'copy'" />
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Кнопки Join / Create -->
-    <div class="flex space-x-4 mb-6">
+    <!-- Мини-кнопки действий -->
+    <div class="flex justify-center gap-4 mt-6">
       <button
         @click="showJoinGameForm = true"
-        class="flex-1 py-2 font-semibold rounded-lg bg-second-color text-white focus:outline-none"
+        class="px-4 py-2 bg-red-700 text-white text-sm rounded-md hover:bg-red-800 transition flex items-center justify-center"
+        title="Join Game"
       >
-        Join
+        <font-awesome-icon icon="sign-in-alt" />
       </button>
       <button
         @click="showCreateGameForm = true"
-        class="flex-1 py-2 font-semibold rounded-lg border-2 border-second-color text-second-color focus:outline-none"
+        class="px-4 py-2 border border-red-700 text-red-700 text-sm rounded-md hover:bg-red-100 transition flex items-center justify-center"
+        title="Create Game"
       >
-        Create
+        <font-awesome-icon icon="plus" />
       </button>
     </div>
 
     <!-- Create Game Modal -->
-    <div
-      v-if="showCreateGameForm"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40"
-    >
-      <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-4">Create Game</h2>
+    <div v-if="showCreateGameForm" class="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4">
+      <div class="bg-gray-100 rounded-2xl shadow-2xl p-6 w-full max-w-sm space-y-6">
+        <h2 class="text-xl font-bold text-center text-gray-800">Create Game</h2>
         <form @submit.prevent="createGame" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Name</label>
-            <input
-              autocomplete="gamename"
-              v-model="gameName"
-              type="text"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              v-model="gameDescription"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Password</label>
-            <input
-              autocomplete="new-password"
-              v-model="createPassword"
-              type="password"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Confirm Password</label>
-            <input
-              autocomplete="new-password"
-              v-model="passwordConfirmation"
-              type="password"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            />
-          </div>
-          <div class="flex justify-end space-x-2">
-            <button type="submit" class="py-2 px-4 bg-indigo-600 text-white rounded-lg">
-              Create
-            </button>
-            <button
-              type="button"
-              @click="showCreateGameForm = false"
-              class="py-2 px-4 bg-gray-300 rounded-lg"
-            >
-              Cancel
-            </button>
+          <input v-model="gameName" type="text" placeholder="Game name" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700" autocomplete="gamename" />
+          <textarea v-model="gameDescription" placeholder="Game description" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700"></textarea>
+          <input v-model="createPassword" type="password" placeholder="Password" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700" autocomplete="new-password" />
+          <input v-model="passwordConfirmation" type="password" placeholder="Confirm password" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700" autocomplete="new-password" />
+          <div class="flex justify-end gap-2">
+            <button type="submit" class="px-6 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition">Create</button>
+            <button type="button" @click="showCreateGameForm = false" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- Join Game Modal -->
-    <div
-      v-if="showJoinGameForm"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40"
-    >
-      <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-4">Join Game</h2>
+    <div v-if="showJoinGameForm" class="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4">
+      <div class="bg-gray-100 rounded-2xl shadow-2xl p-6 w-full max-w-sm space-y-6">
+        <h2 class="text-xl font-bold text-center text-gray-800">Join Game</h2>
         <form @submit.prevent="joinGame" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Game ID</label>
-            <input
-              autocomplete="gameid"
-              v-model="joinGameId"
-              type="text"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Password</label>
-            <input
-              autocomplete="current-password"
-              v-model="joinPassword"
-              type="password"
-              class="w-full p-2 border rounded-lg focus:outline-none focus:ring"
-            />
-          </div>
-          <div class="flex justify-end space-x-2">
-            <button type="submit" class="py-2 px-4 bg-second-color text-white rounded-lg">
-              Join
-            </button>
-            <button
-              type="button"
-              @click="showJoinGameForm = false"
-              class="py-2 px-4 bg-gray-300 rounded-lg"
-            >
-              Cancel
-            </button>
+          <input v-model="joinGameId" type="text" placeholder="Game ID" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700" autocomplete="gameid" />
+          <input v-model="joinPassword" type="password" placeholder="Password" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-red-700" autocomplete="current-password" />
+          <div class="flex justify-end gap-2">
+            <button type="submit" class="px-6 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition">Join</button>
+            <button type="button" @click="showJoinGameForm = false" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Logout -->
-    <button
-      @click="logout"
-      class="w-full py-2 bg-red-500 text-white rounded-lg mt-4"
-    >
-      Logout
-    </button>
   </div>
 </template>
 
