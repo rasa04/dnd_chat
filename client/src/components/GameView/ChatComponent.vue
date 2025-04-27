@@ -40,15 +40,15 @@ import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import MessageComponent from './MessageComponent.vue'
 
-const route     = useRoute()
-const gameId    = Number(route.params.game_id)
+const route = useRoute()
+const gameId = Number(route.params.game_id)
 const userStore = useUserStore()
-const user      = userStore.data
+const user = userStore.data
 
-const messages   = ref([])
-const message    = ref('')
+const messages = ref([])
+const message = ref('')
 const scrollArea = ref(null)
-let   socket     = null
+let socket = null
 
 // утилита автоскролла
 async function scrollToBottom() {
@@ -65,9 +65,9 @@ onMounted(async () => {
   )
 
   messages.value = data.map(m => ({
-    id:      m.id,
-    body:    m.body,
-    from:    Number(m.from),
+    id: m.id,
+    body: m.body,
+    from: Number(m.from),
     rawTime: m.time // ISO-строка
   }))
 
@@ -79,9 +79,9 @@ onMounted(async () => {
   socket.addEventListener('message', evt => {
     const m = JSON.parse(evt.data)
     messages.value.push({
-      id:      m.id,
-      body:    m.body,
-      from:    Number(m.from),
+      id: m.id,
+      body: m.body,
+      from: Number(m.from),
       rawTime: m.time
     })
     scrollToBottom()
@@ -90,7 +90,9 @@ onMounted(async () => {
 
 // отправка — не пушим локально, ждём WS
 function send() {
-  if (!message.value.trim()) return
+  if (!message.value.trim()) {
+    return
+  }
 
   axios.post(
     `${import.meta.env.VITE_API_URL}/api/v1/messages/`,
@@ -104,5 +106,4 @@ function send() {
 </script>
 
 <style scoped>
-/* без изменений */
 </style>
