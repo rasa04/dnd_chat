@@ -14,22 +14,37 @@
       />
     </div>
 
-    <!-- ввод -->
-    <div class="flex justify-center items-center p-4 bg-second-color">
-      <input
-        v-model="message"
-        @keyup.enter="send"
-        type="text"
-        placeholder="Write..."
-        class="mr-2 px-4 py-2 border rounded-2xl focus:outline-none w-full"
+  <div class="flex items-center p-4 bg-second-color space-x-2">
+    <input
+      v-model="message"
+      @keyup.enter="send"
+      :disabled="isSending"
+      type="text"
+      placeholder="Write..."
+      class="flex-1 px-4 py-2 border border-gray-300 rounded-full
+             focus:outline-none focus:ring-2 focus:ring-indigo-500
+             transition-shadow duration-200 shadow-sm focus:shadow-md
+             disabled:opacity-50 disabled:cursor-not-allowed"
+    />
+    <button
+      @click="send"
+      :disabled="isSending || !message.trim()"
+      class="p-3 bg-indigo-600 text-white rounded-full
+             hover:bg-indigo-700 active:scale-90 transition duration-150 ease-out
+             disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <font-awesome-icon
+        v-if="!isSending"
+        icon="paper-plane"
       />
-      <button
-        @click="send"
-        class="px-4 py-2 bg-second-color text-white rounded-2xl focus:outline-none hover:bg-blue-500 transition duration-200"
-      >
-        <font-awesome-icon :icon="['fas', 'paper-plane']" />
-      </button>
-    </div>
+      <font-awesome-icon
+        v-else
+        icon="spinner"
+        spin
+      />
+    </button>
+  </div>
+
   </div>
 </template>
 
@@ -48,6 +63,7 @@ const user = userStore.data
 const messages = ref([])
 const message = ref('')
 const scrollArea = ref(null)
+const isSending = ref(false)
 let socket = null
 
 // утилита автоскролла
@@ -88,20 +104,24 @@ onMounted(async () => {
   })
 })
 
-// отправка — не пушим локально, ждём WS
-function send() {
-  if (!message.value.trim()) {
-    return
-  }
+async function send() {
+  if (!message.value.trim() || isSending.value) return
 
-  axios.post(
-    `${import.meta.env.VITE_API_URL}/api/v1/messages/`,
-    { body: message.value, game_id: gameId },
-    { headers: { Authorization: localStorage.getItem('TOKEN') } }
-  ).then(() => {
+  isSending.value = true
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/v1/messages/`,
+      { body: message.value, game_id: gameId },
+      { headers: { Authorization: localStorage.getItem('TOKEN') } }
+    )
     message.value = ''
+    // скролл если нужно
     scrollToBottom()
-  }).catch(console.error)
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isSending.value = false
+  }
 }
 </script>
 
