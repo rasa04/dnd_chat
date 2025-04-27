@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-second-color col-span-3 flex flex-col h-full pt-2">
+  <div class="bg-chat-background-color col-span-3 flex flex-col h-full pt-2">
     <!-- область сообщений -->
     <div
       ref="scrollArea"
@@ -14,7 +14,7 @@
       />
     </div>
 
-  <div class="flex items-center p-4 bg-second-color space-x-2">
+  <div class="flex items-center p-4 bg-chat-background-color space-x-2">
     <input
       v-model="message"
       @keyup.enter="send"

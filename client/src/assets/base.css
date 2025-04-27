@@ -1,6 +1,7 @@
 :root {
     --main-color: rgb(111, 10, 25);
     --second-color: rgb(0, 0, 25);
+    --chat-background-color: #1e1b26
 }
 
 @layer base {

@@ -1,7 +1,7 @@
 <template>
   <main class="h-screen flex flex-col">
     <!-- Шапка -->
-    <div class="bg-gradient-to-r from-indigo-500 via-teal-500 to-emerald-500 p-4">
+    <div class="bg-gradient-to-r from-purple-900 via-red-800 to-red-700 p-4">
       <div class="grid grid-cols-3 justify-items-center items-center gap-4">
         <!-- Домик -->
         <router-link :to="{ name: 'profile' }" class="text-white hover:underline">
@@ -19,7 +19,7 @@
           <font-awesome-icon
             v-else
             icon="gamepad"
-            class="w-10 h-10 text-white rounded-full bg-second-color p-1"
+            class="w-10 h-10 text-white rounded-full bg-chat-background-color p-1"
           />
           <span class="font-serif text-3xl font-bold text-white">{{ game.name }}</span>
         </div>
@@ -33,27 +33,50 @@
     </div>
 
     <!-- Тело: чат -->
-    <div class="flex-1 overflow-hidden bg-second-color">
+    <div class="flex-1 overflow-hidden bg-chat-background-color">
       <div class="h-full mx-auto px-4 md:px-20 lg:px-40">
-        <!-- ChatComponent займёт всю ширину контейнера -->
         <ChatComponent class="h-full w-full" />
       </div>
     </div>
 
-    <!-- Футер: опции -->
-    <div class="bg-slate-500 py-4 px-4 md:px-8">
+    <!-- Футер -->
+    <div class="bg-gray-800 py-4 px-4 md:px-8">
       <div class="max-w-6xl mx-auto flex justify-between space-x-4">
-        <div class="flex-1 bg-second-color text-white p-4 rounded-lg flex flex-col items-center">
-          <img src="@/assets/img/bestiary.png" alt="Bestiary" class="w-16 h-16 mb-2"/>
+        <!-- Бестиарий -->
+        <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
+          <img src="@/assets/img/bestiary.png" alt="Bestiary" class="w-16 h-16 mb-2" />
           <span>Bestiary</span>
         </div>
-        <div class="flex-1 bg-second-color text-white p-4 rounded-lg flex flex-col items-center">
-          <img src="@/assets/img/spells.png" alt="Spells" class="w-16 h-16 mb-2"/>
+
+        <!-- Заклинания -->
+        <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
+          <img src="@/assets/img/spells.png" alt="Spells" class="w-16 h-16 mb-2" />
           <span>Spells</span>
         </div>
-        <div class="flex-1 bg-second-color text-white p-4 rounded-lg flex flex-col items-center">
-          <img src="@/assets/img/dice.png" alt="Dice" class="w-16 h-16 mb-2"/>
-          <span>Dice</span>
+
+        <!-- Кости (выбор дайса) -->
+        <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
+          <div class="flex items-center gap-4">
+            <img src="@/assets/img/dice.png" alt="Dice" class="w-16 h-16" />
+            <div v-if="diceResult !== null" class="text-yellow-400 text-3xl font-bold">
+              {{ diceResult }}
+            </div>
+          </div>
+
+          <!-- Сетка дайсов -->
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-4 w-full max-w-xs">
+            <button
+              v-for="dice in diceTypes"
+              :key="dice.sides"
+              @click="rollDice(dice)"
+              :class="[
+                'w-full py-2 rounded-md text-sm font-semibold transition text-center',
+                selectedDice === dice.label ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 hover:bg-gray-600'
+              ]"
+            >
+              {{ dice.label }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -70,7 +93,22 @@ export default {
   data() {
     return {
       game: {},
+      diceResult: null,
+      diceTypes: [
+        { label: 'd4', sides: 4 },
+        { label: 'd6', sides: 6 },
+        { label: 'd8', sides: 8 },
+        { label: 'd10', sides: 10 },
+        { label: 'd12', sides: 12 },
+        { label: 'd20', sides: 20 },
+        { label: 'd100', sides: 100 },
+      ],
     };
+  },
+  methods: {
+    rollDice(dice) {
+      this.diceResult = Math.floor(Math.random() * dice.sides) + 1;
+    },
   },
   async created() {
     const id = this.$route.params.game_id;

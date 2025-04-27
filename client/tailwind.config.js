@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         "main-color": "var(--main-color)",
         "second-color": "var(--second-color)",
+        "chat-background-color": "var(--chat-background-color)",
       }
     },
   },
