@@ -1,4 +1,4 @@
-FROM node:lts-alpine as base
+FROM node:lts-alpine AS base
 
 RUN apk update && apk add --no-cache nano
 
@@ -24,7 +24,7 @@ RUN touch ./src/assets/main.css \
 
 EXPOSE 8080
 
-FROM base as production
+FROM base AS production
 
 RUN npm run build
 
@@ -34,5 +34,5 @@ COPY ${CLIENT_LOCAL_WORK_DIR}/src/components ./dist/assets/components
 
 CMD ["http-server", "--port", "8080", "-P", "http://localhost:8080?", "dist"]
 
-FROM base as development
+FROM base AS development
 CMD ["npm", "run", "dev"]
