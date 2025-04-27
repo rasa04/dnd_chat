@@ -27,7 +27,7 @@ class MessageResource extends JsonResource
             'id' => (string)$this->offsetGet('id'),
             'body' => $this->offsetGet('body'),
             'from' => (string)$this->offsetGet('user_id'),
-            'time' => $time->diffForHumans(),
+            'time' => $time->toIso8601String(),
         ];
     }
 }

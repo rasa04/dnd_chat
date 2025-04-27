@@ -36,7 +36,6 @@
 
 <script>
 import ChatComponent from "@/components/GameView/ChatComponent.vue";
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import axios from "axios";
 
 export default {
@@ -45,7 +44,6 @@ export default {
   components: {
     ChatComponent
   },
-
 
   data() {
     return {

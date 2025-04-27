@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\IncorrectMessageWorkloadException;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\ObjectValue\HandleMessageTask;
@@ -28,9 +27,6 @@ final class MessageController extends Controller
         );
     }
 
-    /**
-     * @throws IncorrectMessageWorkloadException
-     */
     public function store(StoreRequest $request): array
     {
         $message = $request->validated();
