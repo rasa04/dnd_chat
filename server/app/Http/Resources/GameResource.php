@@ -22,9 +22,10 @@ final class GameResource extends JsonResource
         return [
             'id' => $this->offsetGet('id'),
             'name' => $this->offsetGet('name'),
+            'game_master_id' => $this->offsetGet('game_master_id'),
             'description' => $this->offsetGet('description'),
             'photo_link' => $this->offsetGet('photo_link'),
-            'participants' => UserResource::makeResolvedByCollection($this->offsetGet('users'))
+            'participants' => UserResource::makeResolvedByCollection($this->offsetGet('users')),
         ];
     }
 }

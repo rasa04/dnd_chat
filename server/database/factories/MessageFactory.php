@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Game;
 use App\Models\Message;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,11 +18,11 @@ class MessageFactory extends Factory
      */
     public function definition(): array
     {
-        $game = Game::inRandomOrder()->first();
+        $game = Game::query()->inRandomOrder()->first();
         return [
             'body' => fake()->realText,
-            'user_id' => $game->users->random()->id,
-            'game_id' => $game->id
+            'user_id' => $game->users->random()->get('id'),
+            'game_id' => $game->id,
         ];
     }
 }

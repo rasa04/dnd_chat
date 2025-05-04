@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
+            $table->unsignedBigInteger('game_master_id');
             $table->text('password')->nullable();
             $table->string('photo_link')->nullable();
             $table->timestamps();
+
+            $table->foreign('game_master_id')->references('id')->on('users');
         });
     }
 

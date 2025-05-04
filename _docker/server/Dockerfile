@@ -1,7 +1,7 @@
 FROM php:8.4-fpm
 
-ENV WORK_DIR /var/www/server
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV WORK_DIR=/var/www/server
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get update && apt-get install -y \
 		libfreetype-dev \

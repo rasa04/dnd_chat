@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\MessageTypeEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,7 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->string('body');
+            $table->enum('type', MessageTypeEnum::getValues());
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('game_id');
             $table->timestamps();

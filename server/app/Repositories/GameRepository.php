@@ -38,7 +38,8 @@ final class GameRepository extends AbstractRepository
             $game = Game::query()->create([
                 'name' => $data['name'],
                 'description' => $data['description'],
-                'password' => Hash::make($data['password'])
+                'game_master_id' => $userId,
+                'password' => Hash::make($data['password']),
             ]);
             $game->users()->attach($userId);
             DB::commit();

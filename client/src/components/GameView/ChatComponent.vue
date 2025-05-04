@@ -4,7 +4,7 @@
     <div
       ref="scrollArea"
       class="flex flex-col bg-cover rounded-xl h-[500px] overflow-y-auto"
-      style="background-image: url('@/assets/img/background.jpg')"
+      :style="{ backgroundImage: `url(${chat_bg})` }"
     >
       <MessageComponent
         v-for="msg in messages"
@@ -54,6 +54,7 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import MessageComponent from './MessageComponent.vue'
+import chat_bg from '@/assets/img/chat_background.png'
 
 const route = useRoute()
 const gameId = Number(route.params.game_id)

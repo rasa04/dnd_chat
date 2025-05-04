@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Game>
+ * @extends Factory<Game>
  */
 class GameFactory extends Factory
 {
@@ -16,9 +17,12 @@ class GameFactory extends Factory
      */
     public function definition(): array
     {
+        $game = Game::query()->inRandomOrder()->first();
+
         return [
             'name' => $this->faker->slug,
             'description' => $this->faker->realText,
+            'game_master_id' => $game->users->random()->get('id'),
             'password' => '12345678',
         ];
     }
