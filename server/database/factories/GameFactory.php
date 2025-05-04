@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class GameFactory extends Factory
      */
     public function definition(): array
     {
-        $game = Game::query()->inRandomOrder()->first();
+        $game = User::query()->inRandomOrder()->first();
 
         return [
             'name' => $this->faker->slug,

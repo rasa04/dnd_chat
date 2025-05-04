@@ -24,18 +24,18 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
-        $users = User::factory()
-            ->count(100)
-            ->create();
-
-        Game::factory()
-            ->count(10)
-            ->hasAttached($users->random(10))
-            ->create();
-
-        Message::factory()
-            ->count(1000)
-            ->create();
+//        $users = User::factory()
+//            ->count(100)
+//            ->create();
+//
+//        Game::factory()
+//            ->count(10)
+//            ->hasAttached($users->random(10))
+//            ->create();
+//
+//        Message::factory()
+//            ->count(1000)
+//            ->create();
 
     }
 }

@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->string('body');
-            $table->enum('type', MessageTypeEnum::getValues());
+            $table->enum('type', MessageTypeEnum::getValues())
+                ->default(MessageTypeEnum::MessageType->value);
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('game_id');
             $table->timestamps();

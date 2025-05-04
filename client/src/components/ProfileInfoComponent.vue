@@ -104,7 +104,7 @@
     </div>
 
     <!-- Create Game Modal -->
-    <div v-if="showCreateGameForm" class="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4">
+    <div v-if="showCreateGameForm" class="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div class="bg-gray-100 rounded-2xl shadow-2xl p-6 w-full max-w-sm space-y-6">
         <h2 class="text-xl font-bold text-center text-gray-800">Create Game</h2>
         <form @submit.prevent="createGame" class="space-y-4">
@@ -121,7 +121,7 @@
     </div>
 
     <!-- Join Game Modal -->
-    <div v-if="showJoinGameForm" class="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4">
+    <div v-if="showJoinGameForm" class="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div class="bg-gray-100 rounded-2xl shadow-2xl p-6 w-full max-w-sm space-y-6">
         <h2 class="text-xl font-bold text-center text-gray-800">Join Game</h2>
         <form @submit.prevent="joinGame" class="space-y-4">
@@ -144,6 +144,7 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
+import { pushToast } from '@/stores/toast.js'
 
 const userStore = useUserStore()
 const { data: user } = storeToRefs(userStore)
@@ -184,7 +185,15 @@ async function createGame() {
     showCreateGameForm.value = false
 
   } catch (err) {
-    console.error('Create game failed:', err)
+    if (err.response?.status === 422) {
+      // Если сервер отдаёт массив ошибок:
+      const msg = err.response.data.message
+                || Object.values(err.response.data.errors || {})
+                    .flat().join('; ')
+      pushToast(msg, 'error', 5000)
+    } else {
+        console.error('Create game failed:', err)
+    }
   }
 }
 

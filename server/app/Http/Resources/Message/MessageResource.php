@@ -26,6 +26,7 @@ class MessageResource extends JsonResource
         return [
             'id' => (string)$this->offsetGet('id'),
             'body' => $this->offsetGet('body'),
+            'type' => $this->offsetGet('type'),
             'from' => (string)$this->offsetGet('user_id'),
             'time' => $time->toIso8601String(),
         ];
