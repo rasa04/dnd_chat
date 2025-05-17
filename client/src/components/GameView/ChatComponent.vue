@@ -14,36 +14,36 @@
       />
     </div>
 
-  <div class="flex items-center p-4 bg-chat-background-color space-x-2">
-    <input
-      v-model="message"
-      @keyup.enter="send"
-      :disabled="isSending"
-      type="text"
-      placeholder="Write..."
-      class="flex-1 px-4 py-2 border border-gray-300 rounded-full
-             focus:outline-none focus:ring-2 focus:ring-indigo-500
-             transition-shadow duration-200 shadow-sm focus:shadow-md
-             disabled:opacity-50 disabled:cursor-not-allowed"
-    />
-    <button
-      @click="send"
-      :disabled="isSending || !message.trim()"
-      class="p-3 bg-indigo-600 text-white rounded-full
-             hover:bg-indigo-700 active:scale-90 transition duration-150 ease-out
-             disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <font-awesome-icon
-        v-if="!isSending"
-        icon="paper-plane"
+    <div class="flex items-center p-4 bg-chat-background-color space-x-2">
+      <input
+        v-model="message"
+        @keyup.enter="send"
+        :disabled="isSending"
+        type="text"
+        placeholder="Write..."
+        class="flex-1 px-4 py-2 border border-gray-300 rounded-full
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              transition-shadow duration-200 shadow-sm focus:shadow-md
+              disabled:opacity-50 disabled:cursor-not-allowed"
       />
-      <font-awesome-icon
-        v-else
-        icon="spinner"
-        spin
-      />
-    </button>
-  </div>
+      <button
+        @click="send"
+        :disabled="isSending || !message.trim()"
+        class="p-3 bg-indigo-600 text-white rounded-full
+              hover:bg-indigo-700 active:scale-90 transition duration-150 ease-out
+              disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <font-awesome-icon
+          v-if="!isSending"
+          icon="paper-plane"
+        />
+        <font-awesome-icon
+          v-else
+          icon="spinner"
+          spin
+        />
+      </button>
+    </div>
 
   </div>
 </template>
