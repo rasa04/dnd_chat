@@ -55,7 +55,7 @@
   </div>
 </template>
   
-  <script setup>
+<script setup>
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   
   const props = defineProps({

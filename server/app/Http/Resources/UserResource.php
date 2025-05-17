@@ -27,7 +27,7 @@ class UserResource extends JsonResource
             'id' => $this->offsetGet('id'),
             'name' => $this->offsetGet('username'),
             'email' => $this->offsetGet('email'),
-            'games' => $user->games()
+            'games' => $user->games(),
         ];
     }
 }

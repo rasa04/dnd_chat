@@ -37,45 +37,7 @@
     </div>
 
     <!-- Список игроков -->
-    <div
-      v-if="showParticipantsModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      @click.self="showParticipantsModal = false"
-    >
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-80 max-w-full p-4">
-        <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
-          Players ({{ game.participants.length }})
-        </h3>
-        <ul class="space-y-2 max-h-64 overflow-y-auto">
-          <li
-            v-for="p in game.participants"
-            :key="p.id"
-            class="flex items-center space-x-3 py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <!-- аватар-заглушка -->
-            <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex-shrink-0"></div>
-            <!-- id | name | email -->
-            <span class="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200">
-              {{ p.id }} | {{ p.name }} | {{ p.email }}
-            </span>
-          </li>
-          <li
-            v-if="!game.participants.length"
-            class="text-gray-500 text-center py-2"
-          >
-            No players
-          </li>
-        </ul>
-        <div class="mt-4 text-right">
-          <button
-            @click="showParticipantsModal = false"
-            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+    <UsersListPopUpComponent v-model="showParticipantsModal" :game="game" />
 
     <!-- Тело: чат -->
     <div class="flex-1 overflow-hidden bg-chat-background-color">
@@ -110,11 +72,12 @@
 <script>
 import ChatComponent from "@/components/GameView/ChatComponent.vue";
 import DicesPanelComponent from "@/components/GameView/DicesPanelComponent.vue";
+import UsersListPopUpComponent from "@/components/GameView/UsersListPopUpComponent.vue";
 import axios from "axios";
 
 export default {
   name: "GameView",
-  components: { ChatComponent, DicesPanelComponent },
+  components: { ChatComponent, DicesPanelComponent, UsersListPopUpComponent },
 
   data() {
     return {
