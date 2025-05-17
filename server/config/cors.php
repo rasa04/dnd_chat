@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -21,6 +23,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:8080', // Frontend domain
+        'http://0.0.0.0:8080', // Frontend domain
     ],
 
     'allowed_origins_patterns' => [],

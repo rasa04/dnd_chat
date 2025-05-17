@@ -85,7 +85,8 @@ onMounted(async () => {
     id: m.id,
     body: m.body,
     from: Number(m.from),
-    rawTime: m.time // ISO-строка
+    rawTime: m.time, // ISO-строка
+    type: Number(m.type)
   }))
 
   // скроллим в конец
@@ -99,7 +100,8 @@ onMounted(async () => {
       id: m.id,
       body: m.body,
       from: Number(m.from),
-      rawTime: m.time
+      rawTime: m.time,
+      type: Number(m.type)
     })
     scrollToBottom()
   })

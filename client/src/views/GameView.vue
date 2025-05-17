@@ -42,42 +42,21 @@
     <!-- Футер -->
     <div class="bg-gray-800 py-4 px-4 md:px-8">
       <div class="max-w-6xl mx-auto flex justify-between space-x-4">
-        <!-- Бестиарий -->
         <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
-          <img src="@/assets/img/bestiary.png" alt="Bestiary" class="w-16 h-16 mb-2" />
-          <span>Bestiary</span>
-        </div>
-
-        <!-- Заклинания -->
-        <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
-          <img src="@/assets/img/spells.png" alt="Spells" class="w-16 h-16 mb-2" />
-          <span>Spells</span>
+            <!-- Бестиарий -->
+            <div>
+              <img src="@/assets/img/bestiary.png" alt="Bestiary" class="w-16 h-16 mb-2" />
+              <span>Bestiary</span>
+            </div>
+            <!-- Заклинания -->
+            <div>
+              <span>Spells</span>
+              <img src="@/assets/img/spells.png" alt="Spells" class="w-16 h-16 mb-2" />
+            </div>
         </div>
 
         <!-- Кости (выбор дайса) -->
-        <div class="flex-1 bg-chat-background-color text-white p-4 rounded-lg flex flex-col items-center">
-          <div class="flex items-center gap-4">
-            <img src="@/assets/img/dice.png" alt="Dice" class="w-16 h-16" />
-            <div v-if="diceResult !== null" class="text-yellow-400 text-3xl font-bold">
-              {{ diceResult }}
-            </div>
-          </div>
-
-          <!-- Сетка дайсов -->
-          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-4 w-full max-w-xs">
-            <button
-              v-for="dice in diceTypes"
-              :key="dice.sides"
-              @click="rollDice(dice)"
-              :class="[
-                'w-full py-2 rounded-md text-sm font-semibold transition text-center',
-                selectedDice === dice.label ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 hover:bg-gray-600'
-              ]"
-            >
-              {{ dice.label }}
-            </button>
-          </div>
-        </div>
+        <DicesPanelComponent />
       </div>
     </div>
   </main>
@@ -85,31 +64,19 @@
 
 <script>
 import ChatComponent from "@/components/GameView/ChatComponent.vue";
+import DicesPanelComponent from "@/components/GameView/DicesPanelComponent.vue";
 import axios from "axios";
 
 export default {
   name: "GameView",
-  components: { ChatComponent },
+  components: { ChatComponent, DicesPanelComponent },
+
   data() {
     return {
       game: {},
-      diceResult: null,
-      diceTypes: [
-        { label: 'd4', sides: 4 },
-        { label: 'd6', sides: 6 },
-        { label: 'd8', sides: 8 },
-        { label: 'd10', sides: 10 },
-        { label: 'd12', sides: 12 },
-        { label: 'd20', sides: 20 },
-        { label: 'd100', sides: 100 },
-      ],
     };
   },
-  methods: {
-    rollDice(dice) {
-      this.diceResult = Math.floor(Math.random() * dice.sides) + 1;
-    },
-  },
+
   async created() {
     const id = this.$route.params.game_id;
     if (!id) {

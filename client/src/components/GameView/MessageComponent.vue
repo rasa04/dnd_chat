@@ -1,9 +1,39 @@
 <template>
-    <div class="m-4">
+  <div class="m-4">
+    <!-- (Type = 1) Системное сообщение для дайсов -->
+    <div v-if="message.type === 1" class="w-full flex justify-center my-4">
       <div
-        v-if="fromAnotherPlayer"
-        class="inline-block bg-white rounded-xl p-2 whitespace-normal"
+        class="relative max-w-md w-full px-4 py-2 rounded-lg text-center text-sm text-gray-800 select-none
+               bg-white/30 backdrop-blur-sm border border-white/50"
       >
+        <!-- Кто кидал -->
+        <div class="uppercase font-medium mb-1">User {{ message.from }} rolled</div>
+        <!-- Детали бросков -->
+        <div>
+          <span
+            v-for="(r, i) in diceResults"
+            :key="i"
+            class="inline-block mx-1"
+          >
+            🎲 {{ r.macro }} → [{{ r.rolls.join(', ') }}] = {{ r.sum }}
+          </span>
+        </div>
+        <!-- Время -->
+        <div class="text-xs mt-1">{{ formattedTime }}</div>
+      </div>
+    </div>
+
+    <!-- (Type = 0) Обычное сообщение -->
+    <div v-else class="m-4">
+      <!-- Подпись с ID отправителя -->
+      <div class="mb-1 text-xs text-gray-500 select-none">
+        <span v-if="fromAnotherPlayer">
+          User id: {{ message.from }}
+        </span>
+      </div>
+
+      <!-- Собственно пузырёк с текстом -->
+      <div v-if="fromAnotherPlayer" class="inline-block bg-white rounded-xl p-2 whitespace-normal">
         <span>
           {{ message.body }}
           <br />
@@ -22,7 +52,8 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup>
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
@@ -39,7 +70,17 @@
     timer = setInterval(() => { now.value = Date.now() }, 60_000)
   })
   onBeforeUnmount(() => clearInterval(timer))
-  
+
+  // если это дайсы, распарсим JSON из поля body
+  const diceResults = computed(() => {
+    if (props.message.type !== 1) return []
+    try {
+      return JSON.parse(props.message.body)
+    } catch {
+      return []
+    }
+  })
+
   // форматируем ISO-время в «just now», «X minutes ago» и т.д.
   const formattedTime = computed(() => {
     const parsed = Date.parse(props.message.rawTime)
